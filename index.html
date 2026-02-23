@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CITY ARCHITECT PRO</title>
+<title>EMPIRE BUILDER - 不動産投資シミュレーター</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap');
 :root{--bg:#0e1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--gold:#f0b429;--gold2:#d97706;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--purple:#bc8cff;}
@@ -17,6 +16,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:7px
 .stat-chip .lbl{color:var(--text2);font-size:0.6rem;}
 .stat-chip .val{color:var(--gold);font-weight:700;}
 .stat-chip.inc .val{color:var(--green);}
+.stat-chip.debt .val{color:var(--red);}
 .stat-chip.pop .val{color:var(--accent);}
 .stat-chip.stg .val{color:var(--purple);}
 .hbtns{display:flex;gap:5px;flex-shrink:0;}
@@ -32,7 +32,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:7px
 #map-wrap{flex:1;position:relative;overflow:hidden;cursor:crosshair;}
 canvas{display:block;position:absolute;top:0;left:0;}
 #cv-bg{z-index:1;}#cv-city{z-index:2;}#cv-ui{z-index:3;pointer-events:none;}
-/* minimap */
 #minimap{position:absolute;bottom:10px;right:10px;border:1px solid var(--border);border-radius:6px;overflow:hidden;z-index:10;cursor:pointer;}
 .sidebar{width:210px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
 .sidebar::-webkit-scrollbar{width:4px;}
@@ -52,17 +51,22 @@ canvas{display:block;position:absolute;top:0;left:0;}
 .bc{font-size:0.6rem;color:var(--gold);font-family:'JetBrains Mono',monospace;}
 .bi{font-size:0.6rem;color:var(--green);font-family:'JetBrains Mono',monospace;}
 .bp{font-size:0.6rem;color:var(--accent);font-family:'JetBrains Mono',monospace;}
+.br{font-size:0.6rem;color:var(--red);font-family:'JetBrains Mono',monospace;}
 .lk-badge{position:absolute;top:3px;right:3px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 3px;font-size:0.52rem;color:var(--text2);}
 .tool-btns{display:flex;flex-direction:column;gap:4px;}
 .tbtn{width:100%;border-radius:7px;padding:7px 9px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:0.74rem;transition:all .15s;border:1px solid;text-align:center;}
 .tbtn.demo{background:rgba(248,81,73,.1);border-color:var(--red);color:var(--red);}
 .tbtn.demo:hover,.tbtn.demo.on{background:rgba(248,81,73,.25);}
+.tbtn.repair{background:rgba(88,166,255,.1);border-color:var(--accent);color:var(--accent);}
+.tbtn.repair:hover,.tbtn.repair.on{background:rgba(88,166,255,.25);}
 .tbtn.rst{background:rgba(139,148,158,.1);border-color:var(--border);color:var(--text2);}
 .tbtn.rst:hover{background:rgba(139,148,158,.2);color:var(--text);}
-.tooltip{position:absolute;background:var(--surface);border:1px solid var(--gold);padding:7px 11px;border-radius:8px;font-size:0.7rem;pointer-events:none;z-index:100;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:185px;}
+.tooltip{position:absolute;background:var(--surface);border:1px solid var(--gold);padding:7px 11px;border-radius:8px;font-size:0.7rem;pointer-events:none;z-index:100;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:220px;}
 .tooltip .ttn{font-weight:700;margin-bottom:3px;color:var(--gold);}
 .tooltip .ttr{color:var(--text2);font-size:0.62rem;line-height:1.7;}
 .tooltip .ttr span{color:var(--text);}
+.tooltip .ttr .up{color:var(--green);}
+.tooltip .ttr .dn{color:var(--red);}
 .notif{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);padding:7px 16px;border-radius:20px;font-size:0.77rem;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);}
 .notif.show{opacity:1;}
 .notif.gd{border-color:var(--gold);color:var(--gold);}
@@ -71,39 +75,63 @@ canvas{display:block;position:absolute;top:0;left:0;}
 .notif.pu{border-color:var(--purple);color:var(--purple);}
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:none;align-items:center;justify-content:center;}
 .modal-ov.show{display:flex;}
-.modal{background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:32px 44px;text-align:center;max-width:400px;box-shadow:0 0 60px rgba(240,180,41,.25);}
+.modal{background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:32px 44px;text-align:center;max-width:440px;box-shadow:0 0 60px rgba(240,180,41,.25);}
 .modal h2{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:4px;color:var(--gold);margin-bottom:6px;}
 .modal p{color:var(--text2);margin-bottom:22px;font-size:0.88rem;white-space:pre-line;}
-.modal-btn{background:var(--gold);color:#000;border:none;padding:11px 28px;border-radius:8px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;}
+.modal-btn{background:var(--gold);color:#000;border:none;padding:11px 28px;border-radius:8px;font-size:.95rem;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;margin:4px;}
 .modal-btn:hover{background:var(--gold2);}
+.modal-btn.secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.modal-btn.secondary:hover{border-color:var(--gold);}
 .mstars{font-size:1.8rem;margin-bottom:10px;}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-45px)}}
 .ifloat{position:absolute;font-family:'JetBrains Mono',monospace;font-size:0.72rem;pointer-events:none;z-index:150;animation:floatUp 1.4s ease forwards;font-weight:700;}
-/* scroll hint */
 .scroll-hint{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.35);font-size:0.65rem;pointer-events:none;z-index:10;}
+.event-log{position:absolute;bottom:10px;left:10px;z-index:10;display:flex;flex-direction:column;gap:3px;max-width:260px;pointer-events:none;}
+.ev-item{background:rgba(22,27,34,.92);border:1px solid var(--border);border-radius:5px;padding:3px 7px;font-size:0.6rem;backdrop-filter:blur(4px);display:flex;gap:5px;align-items:center;}
+.ev-item.good{border-color:var(--green);color:var(--green);}
+.ev-item.bad{border-color:var(--red);color:var(--red);}
+.ev-item.neutral{border-color:var(--gold);color:var(--gold);}
+.ev-item .ev-date{color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:0.55rem;flex-shrink:0;}
+.loan-body{text-align:left;margin-bottom:18px;}
+.loan-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:14px;}
+.loan-lbl{font-size:0.65rem;color:var(--text2);}
+.loan-val{font-size:0.85rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.loan-val.green{color:var(--green);}
+.loan-val.red{color:var(--red);}
+.loan-val.gold{color:var(--gold);}
+.loan-sep{border:none;border-top:1px solid var(--border);margin:10px 0;}
+.loan-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.loan-row label{font-size:0.72rem;color:var(--text2);white-space:nowrap;}
+.loan-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.85rem;outline:none;}
+.loan-row input:focus{border-color:var(--gold);}
+.port-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 8px;}
+.port-item{display:flex;flex-direction:column;}
+.port-lbl{font-size:0.52rem;color:var(--text2);}
+.port-val{font-size:0.7rem;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text);}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">🏙 CITY ARCHITECT</div>
+  <div class="logo">🏙 EMPIRE BUILDER</div>
   <div class="stats-bar">
-    <div class="stat-chip"><span class="lbl">💰 予算</span><span class="val" id="s-money">10,000</span></div>
-    <div class="stat-chip inc"><span class="lbl">📈 収入/秒</span><span class="val" id="s-income">0</span></div>
-    <div class="stat-chip pop"><span class="lbl">👥 人口</span><span class="val" id="s-pop">0</span></div>
-    <div class="stat-chip"><span class="lbl">🏢 建物</span><span class="val" id="s-bld">0</span></div>
-    <div class="stat-chip stg"><span class="lbl">⭐ ステージ</span><span class="val" id="s-stage">1</span></div>
+    <div class="stat-chip"><span class="lbl">💰 現金</span><span class="val" id="s-money">10,000</span></div>
+    <div class="stat-chip inc"><span class="lbl">🏠 資産総額</span><span class="val" id="s-assets">0</span></div>
+    <div class="stat-chip debt"><span class="lbl">💳 借入残高</span><span class="val" id="s-debt">0</span></div>
+    <div class="stat-chip pop"><span class="lbl">📊 純資産</span><span class="val" id="s-networth">10,000</span></div>
+    <div class="stat-chip stg"><span class="lbl">📅</span><span class="val" id="s-date">1年 1月</span></div>
   </div>
   <div class="hbtns">
+    <button class="hbtn" onclick="openLoanDialog()">💳 借入</button>
     <button class="hbtn sv" onclick="saveGame()">💾 セーブ</button>
     <button class="hbtn" onclick="loadGame()">📂 ロード</button>
   </div>
 </header>
 <div class="stage-bar-wrap">
   <div class="stage-label">
-    <span id="stage-name">ステージ1: 小さな村</span>
-    <span id="stage-goal-txt">目標: ¥5,000</span>
+    <span id="milestone-name">初心者投資家</span>
+    <span id="milestone-goal">次: 純資産 ¥50,000</span>
   </div>
-  <div class="stage-track"><div class="stage-fill" id="stage-fill" style="width:0%"></div></div>
+  <div class="stage-track"><div class="stage-fill" id="milestone-fill" style="width:0%"></div></div>
 </div>
 <div class="main">
   <div id="map-wrap">
@@ -113,10 +141,15 @@ canvas{display:block;position:absolute;top:0;left:0;}
     <canvas id="minimap" width="160" height="100"></canvas>
     <div class="tooltip" id="tooltip">
       <div class="ttn" id="tt-name"></div>
-      <div class="ttr">収入: <span id="tt-inc"></span></div>
-      <div class="ttr">人口: <span id="tt-pop"></span></div>
+      <div class="ttr" id="tt-val-row">評価額: <span id="tt-val"></span></div>
+      <div class="ttr" id="tt-cost-row">購入価格: <span id="tt-cost"></span> (<span id="tt-change"></span>)</div>
+      <div class="ttr" id="tt-rent-row">月額賃料: <span id="tt-rent"></span></div>
+      <div class="ttr" id="tt-vac-row">空室率: <span id="tt-vac"></span></div>
+      <div class="ttr" id="tt-cond-row">状態: <span id="tt-cond"></span></div>
+      <div class="ttr" id="tt-dist-row">地区評価: <span id="tt-dist"></span></div>
     </div>
     <div class="notif" id="notif"></div>
+    <div class="event-log" id="event-log"></div>
     <div class="scroll-hint">🖱 ドラッグでスクロール</div>
   </div>
   <div class="sidebar" id="sidebar"></div>
@@ -124,79 +157,79 @@ canvas{display:block;position:absolute;top:0;left:0;}
 <div class="modal-ov" id="modal">
   <div class="modal">
     <div class="mstars" id="m-stars">⭐⭐⭐</div>
-    <h2 id="m-title">STAGE CLEAR!</h2>
-    <p id="m-desc">次のステージへ！</p>
-    <button class="modal-btn" onclick="nextStage()">次のステージへ →</button>
+    <h2 id="m-title">MILESTONE!</h2>
+    <p id="m-desc">新しい建物が解放されます。</p>
+    <button class="modal-btn" id="m-btn" onclick="closeModal()">OK →</button>
+  </div>
+</div>
+<div class="modal-ov" id="loan-modal">
+  <div class="modal" style="max-width:440px">
+    <h2>💳 融資センター</h2>
+    <div class="loan-body" id="loan-body"></div>
+    <button class="modal-btn secondary" onclick="closeLoanDialog()">閉じる</button>
   </div>
 </div>
 
 <script>
 // ==================== BUILDINGS ====================
 const BUILDINGS = [
-  // ST1
-  {id:'cottage',   name:'小屋',            cost:300,   income:0.5,  pop:2,  score:1,  stage:1},
-  {id:'house',     name:'一般住宅',         cost:800,   income:1.2,  pop:5,  score:3,  stage:1},
-  {id:'road',      name:'道路',             cost:150,   income:0,    pop:0,  score:1,  stage:1, nature:true, mult:0.05, desc:'人口×0.05/秒'},
-  {id:'park',      name:'公園',             cost:600,   income:0,    pop:0,  score:5,  stage:1, nature:true, mult:0.15, desc:'人口×0.15/秒'},
-  {id:'mountain',  name:'山',               cost:1000,  income:0,    pop:0,  score:8,  stage:1, nature:true, mult:0.25, desc:'人口×0.25/秒 (観光)'},
-  {id:'ocean',     name:'海・ビーチ',       cost:1200,  income:0,    pop:0,  score:10, stage:1, nature:true, mult:0.3,  desc:'人口×0.3/秒 (観光)'},
-  // ST2 - ほぼゼロ
-  {id:'apartment', name:'アパート',         cost:2500,  income:0.0001, pop:20, score:8,  stage:2},
-  {id:'shop',      name:'商店',             cost:1800,  income:0.0001, pop:3,  score:6,  stage:2},
-  {id:'clinic',    name:'クリニック',       cost:3000,  income:0.0001, pop:5,  score:10, stage:2},
-  {id:'school',    name:'小学校',           cost:4000,  income:0.0001, pop:30, score:15, stage:2},
-  // ST3 - ゼロ同然
-  {id:'condo',     name:'高級マンション',   cost:10000, income:0.0001, pop:60, score:25, stage:3},
-  {id:'office',    name:'オフィスビル',     cost:8000,  income:0.0001, pop:0,  score:20, stage:3},
-  {id:'hotel',     name:'ホテル',           cost:7000,  income:0.0001, pop:0,  score:18, stage:3},
-  {id:'stadium',   name:'スタジアム',       cost:12000, income:0.0001, pop:0,  score:35, stage:3},
-  // ST4 - 完全に動かない
-  {id:'skyscraper',name:'超巨大ビル',       cost:15000, income:0.0001, pop:0,  score:50, stage:4},
-  {id:'mall',      name:'ショッピングモール',cost:18000, income:0.0001, pop:0,  score:45, stage:4},
-  {id:'luxury',    name:'超高級マンション', cost:10000, income:0.0001, pop:80, score:60, stage:4},
-  {id:'airport',   name:'国際空港',         cost:25000, income:0.0001, pop:0,  score:80, stage:4},
+  // Tier 0 (start)
+  {id:'cottage',   name:'小屋',              cost:300,   baseRent:15,   pop:2,   risk:1, tier:0, cat:'residential'},
+  {id:'house',     name:'一般住宅',          cost:800,   baseRent:40,   pop:5,   risk:1, tier:0, cat:'residential'},
+  {id:'road',      name:'道路',              cost:150,   baseRent:0,    pop:0,   risk:0, tier:0, cat:'infra', repBonus:2},
+  {id:'park',      name:'公園',              cost:600,   baseRent:0,    pop:0,   risk:0, tier:0, cat:'infra', repBonus:5},
+  // Tier 1 (¥50K net worth)
+  {id:'apartment', name:'アパート',          cost:2500,  baseRent:125,  pop:20,  risk:2, tier:1, cat:'residential'},
+  {id:'shop',      name:'商店',              cost:1800,  baseRent:90,   pop:3,   risk:2, tier:1, cat:'commercial'},
+  {id:'mountain',  name:'山',                cost:1000,  baseRent:0,    pop:0,   risk:0, tier:1, cat:'infra', repBonus:8},
+  {id:'ocean',     name:'海・ビーチ',        cost:1200,  baseRent:0,    pop:0,   risk:0, tier:1, cat:'infra', repBonus:10},
+  // Tier 2 (¥200K)
+  {id:'clinic',    name:'クリニック',        cost:3000,  baseRent:150,  pop:5,   risk:2, tier:2, cat:'commercial'},
+  {id:'school',    name:'小学校',            cost:4000,  baseRent:0,    pop:30,  risk:1, tier:2, cat:'infra', repBonus:12},
+  {id:'condo',     name:'高級マンション',    cost:10000, baseRent:500,  pop:60,  risk:2, tier:2, cat:'residential'},
+  {id:'office',    name:'オフィスビル',      cost:8000,  baseRent:400,  pop:0,   risk:2, tier:2, cat:'commercial'},
+  // Tier 3 (¥1M)
+  {id:'hotel',     name:'ホテル',            cost:7000,  baseRent:350,  pop:0,   risk:3, tier:3, cat:'commercial'},
+  {id:'stadium',   name:'スタジアム',        cost:12000, baseRent:600,  pop:0,   risk:3, tier:3, cat:'commercial'},
+  // Tier 4 (¥10M)
+  {id:'skyscraper',name:'超巨大ビル',        cost:15000, baseRent:750,  pop:0,   risk:3, tier:4, cat:'commercial'},
+  {id:'mall',      name:'ショッピングモール',cost:18000, baseRent:900,  pop:0,   risk:3, tier:4, cat:'commercial'},
+  {id:'luxury',    name:'超高級マンション',  cost:10000, baseRent:500,  pop:80,  risk:3, tier:4, cat:'residential'},
+  {id:'airport',   name:'国際空港',          cost:25000, baseRent:1250, pop:0,   risk:3, tier:4, cat:'commercial'},
 ];
 
-const STAGES=[
-  {stage:1,name:'小さな村',    goal:500},
-  {stage:2,name:'成長する町',  goal:2000},
-  {stage:3,name:'発展する都市',goal:8000},
-  {stage:4,name:'大都市',      goal:30000},
-  {stage:5,name:'メガシティ',  goal:null},
+const MILESTONES = [
+  {threshold:10000,    title:'初心者投資家'},
+  {threshold:50000,    title:'不動産オーナー'},
+  {threshold:200000,   title:'地域開発者'},
+  {threshold:1000000,  title:'不動産王'},
+  {threshold:10000000, title:'メガ投資家'},
 ];
 
-// ==================== STATE ====================
-const GRID = 36;
-const MAP_COLS = 80;
-const MAP_ROWS = 50;
-const MAP_W = MAP_COLS * GRID;
-const MAP_H = MAP_ROWS * GRID;
+const EVENT_TYPES = [
+  {id:'boom',   name:'市場好況',   weight:5, type:'good',    icon:'📈'},
+  {id:'crash',  name:'市場暴落',   weight:3, type:'bad',     icon:'📉'},
+  {id:'quake',  name:'地震',       weight:2, type:'bad',     icon:'🌋'},
+  {id:'fire',   name:'火災',       weight:3, type:'bad',     icon:'🔥'},
+  {id:'exodus', name:'人口流出',   weight:4, type:'bad',     icon:'🚪'},
+  {id:'redev',  name:'再開発',     weight:5, type:'good',    icon:'🏗'},
+  {id:'rate',   name:'金利変動',   weight:8, type:'neutral', icon:'💹'},
+  {id:'vacancy',name:'空室増加',   weight:6, type:'bad',     icon:'🏚'},
+];
 
-let state = {money:10000, totalEarned:0, population:0, stage:1, grid:{}, placedCount:0};
-let cam = {x:0, y:0}; // camera offset (pixels)
-let selectedType = 'house';
-let isDemolish = false;
-let animFrame = 0;
-let VW, VH; // viewport size
-let lastTick = Date.now();
-let notifTO;
-let dragging = false, dragStart = {x:0,y:0}, camStart = {x:0,y:0};
+const DIST_NAMES = [
+  '港北','中央','都心','港南',
+  '西部','本町','栄','東部',
+  '南西','下町','商業','南東',
+];
 
-const bgC   = document.getElementById('cv-bg');
-const cityC = document.getElementById('cv-city');
-const uiC   = document.getElementById('cv-ui');
-const mm    = document.getElementById('minimap');
-const bgX   = bgC.getContext('2d');
-const cityX = cityC.getContext('2d');
-const mmX   = mm.getContext('2d');
-
-// ==================== SIDEBAR ====================
-const CATS=[
+const CATS = [
   {label:'🏘 住居',    ids:['cottage','house','apartment','condo','luxury']},
-  {label:'🏬 商業',    ids:['shop','office','hotel','mall','skyscraper','airport','stadium']},
-  {label:'🌿 自然・施設',ids:['road','park','mountain','ocean','clinic','school']},
+  {label:'🏬 商業',    ids:['shop','clinic','office','hotel','stadium','skyscraper','mall','airport']},
+  {label:'🌿 インフラ',ids:['road','park','mountain','ocean','school']},
 ];
 
+// ==================== SVG ICONS ====================
 const SVGS={
   cottage:`<svg viewBox="0 0 32 32"><rect x="5" y="17" width="22" height="13" fill="#8B7355" rx="1"/><polygon points="16,5 3,19 29,19" fill="#6B4F35"/><rect x="12" y="24" width="8" height="6" fill="#3D2B1F"/><rect x="6" y="19" width="5" height="5" fill="#C4A882"/></svg>`,
   house:`<svg viewBox="0 0 32 32"><rect x="3" y="15" width="26" height="15" fill="#C4956A" rx="1"/><polygon points="16,3 1,17 31,17" fill="#8B6347"/><rect x="11" y="23" width="10" height="7" fill="#5C3A21"/><rect x="4" y="17" width="6" height="6" fill="#87CEEB" opacity=".8"/><rect x="22" y="17" width="6" height="6" fill="#87CEEB" opacity=".8"/></svg>`,
@@ -218,9 +251,169 @@ const SVGS={
   airport:`<svg viewBox="0 0 32 32"><rect x="0" y="21" width="32" height="11" fill="#212121"/><rect x="3" y="13" width="26" height="10" fill="#37474f"/><rect x="8" y="7" width="16" height="8" fill="#1E3A5F" rx="1"/><rect x="4" y="15" width="5" height="5" fill="#BAE6FD" opacity=".8"/><rect x="23" y="15" width="5" height="5" fill="#BAE6FD" opacity=".8"/><polygon points="16,3 10,9 22,9" fill="#334155"/><rect x="27" y="9" width="4" height="14" fill="#546e7a"/><rect x="25" y="9" width="8" height="4" fill="#80cbc4"/></svg>`,
 };
 
+// ==================== GRID CONSTANTS ====================
+const GRID = 36;
+const MAP_COLS = 80;
+const MAP_ROWS = 50;
+const MAP_W = MAP_COLS * GRID;
+const MAP_H = MAP_ROWS * GRID;
+const DIST_COLS = 4;
+const DIST_ROWS = 3;
+const DIST_W = MAP_COLS / DIST_COLS; // 20
+const DIST_H = Math.ceil(MAP_ROWS / DIST_ROWS); // 17
+const MONTH_MS = 5000;
+
+// ==================== STATE ====================
+function defaultState(){
+  return {
+    money: 10000,
+    year: 1,
+    month: 1,
+    loanBalance: 0,
+    loanRate: 0,
+    creditScore: 600,
+    maxMilestone: 0,
+    population: 0,
+    grid: {},
+    properties: {},
+    districts: {},
+    eventLog: [],
+    marketMod: 0,
+    marketModMonths: 0,
+    vacancyMod: 0,
+    vacancyModMonths: 0,
+    rateMod: 0,
+    bankruptMonths: 0,
+  };
+}
+
+let state = defaultState();
+let cam = {x:0, y:0};
+let selectedType = 'house';
+let isDemolish = false;
+let isRepairMode = false;
+let animFrame = 0;
+let VW, VH;
+let lastMonthTime = Date.now();
+let notifTO;
+let dragging = false, dragStart = {x:0,y:0}, camStart = {x:0,y:0};
+let gamePaused = false;
+
+const bgC   = document.getElementById('cv-bg');
+const cityC = document.getElementById('cv-city');
+const uiC   = document.getElementById('cv-ui');
+const mm    = document.getElementById('minimap');
+const bgX   = bgC.getContext('2d');
+const cityX = cityC.getContext('2d');
+const uiX   = uiC.getContext('2d');
+const mmX   = mm.getContext('2d');
+
+// ==================== TERRAIN ====================
+const TERRAIN = {};
+const TERRAIN_COLORS = {grass:'#3a6b3a', water:'#1a6fa0', sand:'#c2a46b', hill:'#6b7d6b'};
+const TERRAIN_DARK = {grass:'#2e5430', water:'#154d72', sand:'#a8884a', hill:'#546059'};
+
+function generateTerrain(){
+  for(let cy=0;cy<MAP_ROWS;cy++){
+    for(let cx=0;cx<MAP_COLS;cx++){
+      const nx=cx/MAP_COLS, ny=cy/MAP_ROWS;
+      const v=Math.sin(nx*6+1.2)*Math.cos(ny*5+0.7)+Math.sin(nx*12+0.3)*Math.cos(ny*8+1.5)*0.5+Math.sin((nx+ny)*9+2)*0.3;
+      const mv=Math.sin(nx*8+2)*Math.cos(ny*6+1)+Math.sin(nx*3)*0.5;
+      let t='grass';
+      if(v<-0.7) t='water'; else if(v<-0.5) t='sand'; else if(mv>1.2) t='hill';
+      TERRAIN[`${cx},${cy}`]=t;
+    }
+  }
+  for(let cx=0;cx<MAP_COLS;cx++){ TERRAIN[`${cx},0`]='water'; TERRAIN[`${cx},${MAP_ROWS-1}`]='water'; }
+  for(let cy=0;cy<MAP_ROWS;cy++){ TERRAIN[`0,${cy}`]='water'; TERRAIN[`${MAP_COLS-1},${cy}`]='water'; }
+}
+
+// ==================== DISTRICT SYSTEM ====================
+function getDistrictKey(cx,cy){
+  const dx=Math.min(Math.floor(cx/DIST_W), DIST_COLS-1);
+  const dy=Math.min(Math.floor(cy/DIST_H), DIST_ROWS-1);
+  return `${dx},${dy}`;
+}
+
+function getDistrictName(dk){
+  const[dx,dy]=dk.split(',').map(Number);
+  return DIST_NAMES[dy*DIST_COLS+dx]||'不明';
+}
+
+function initDistricts(){
+  state.districts={};
+  for(let dy=0;dy<DIST_ROWS;dy++){
+    for(let dx=0;dx<DIST_COLS;dx++){
+      let water=0, hill=0, total=0;
+      for(let cy=dy*DIST_H; cy<Math.min((dy+1)*DIST_H, MAP_ROWS); cy++){
+        for(let cx=dx*DIST_W; cx<Math.min((dx+1)*DIST_W, MAP_COLS); cx++){
+          total++;
+          const t=TERRAIN[`${cx},${cy}`];
+          if(t==='water') water++;
+          if(t==='hill') hill++;
+        }
+      }
+      let baseRep=40;
+      if(water/total>0.05 && water/total<0.4) baseRep+=15;
+      if(hill/total>0.1) baseRep+=8;
+      state.districts[`${dx},${dy}`]={reputation:Math.min(baseRep,80)};
+    }
+  }
+}
+
+function updateDistricts(){
+  for(let dy=0;dy<DIST_ROWS;dy++){
+    for(let dx=0;dx<DIST_COLS;dx++){
+      const dk=`${dx},${dy}`;
+      const dist=state.districts[dk];
+      if(!dist) continue;
+      let infraCount=0, buildingCount=0, totalCondition=0;
+      for(let cy=dy*DIST_H; cy<Math.min((dy+1)*DIST_H, MAP_ROWS); cy++){
+        for(let cx=dx*DIST_W; cx<Math.min((dx+1)*DIST_W, MAP_COLS); cx++){
+          const prop=state.properties[`${cx},${cy}`];
+          if(prop){
+            buildingCount++;
+            totalCondition+=prop.condition;
+            const b=BUILDINGS.find(x=>x.id===prop.type);
+            if(b&&b.cat==='infra') infraCount+=(b.repBonus||1);
+          }
+        }
+      }
+      let delta=0;
+      if(infraCount>0) delta+=Math.min(infraCount*0.3, 3);
+      if(buildingCount>0){
+        const avgCond=totalCondition/buildingCount;
+        if(avgCond<40) delta-=1;
+        if(avgCond>70) delta+=0.5;
+      }
+      if(buildingCount>5) delta+=0.3;
+      dist.reputation=Math.max(0, Math.min(100, dist.reputation+delta));
+    }
+  }
+}
+
+// ==================== SIDEBAR ====================
 function buildSidebar(){
   const sb=document.getElementById('sidebar');
   sb.innerHTML='';
+
+  // Portfolio summary
+  const ps=document.createElement('div');
+  ps.className='sb-sec';
+  const propKeys=Object.keys(state.properties);
+  const rentProps=propKeys.filter(k=>{const b=BUILDINGS.find(x=>x.id===state.properties[k].type);return b&&b.baseRent>0;});
+  const avgVac=rentProps.length>0 ? rentProps.reduce((s,k)=>s+state.properties[k].vacancy,0)/rentProps.length : 0;
+  const avgCond=propKeys.length>0 ? propKeys.reduce((s,k)=>s+state.properties[k].condition,0)/propKeys.length : 0;
+  ps.innerHTML=`<div class="sb-ttl">📋 ポートフォリオ</div>
+    <div class="port-grid">
+      <div class="port-item"><span class="port-lbl">物件数</span><span class="port-val">${propKeys.length}</span></div>
+      <div class="port-item"><span class="port-lbl">信用スコア</span><span class="port-val">${state.creditScore}</span></div>
+      <div class="port-item"><span class="port-lbl">平均空室率</span><span class="port-val">${avgVac.toFixed(1)}%</span></div>
+      <div class="port-item"><span class="port-lbl">平均状態</span><span class="port-val">${avgCond.toFixed(0)}/100</span></div>
+    </div>`;
+  sb.appendChild(ps);
+
+  // Building categories
   CATS.forEach(cat=>{
     const sec=document.createElement('div');
     sec.className='sb-sec';
@@ -228,13 +421,17 @@ function buildSidebar(){
     cat.ids.forEach(id=>{
       const b=BUILDINGS.find(x=>x.id===id);
       if(!b)return;
-      const locked=b.stage>state.stage;
+      const locked=b.tier>state.maxMilestone;
       const btn=document.createElement('button');
-      btn.className='bld-btn'+(locked?' locked':'')+(selectedType===id&&!locked?' active':'');
+      btn.className='bld-btn'+(locked?' locked':'')+(selectedType===id&&!locked&&!isDemolish&&!isRepairMode?' active':'');
       btn.dataset.id=id;
-      const incTxt = b.nature
-        ? `<span class="bi">🎡${b.desc||''}</span>`
-        : (b.income>0?`<span class="bi">+${b.income}/s</span>`:'');
+      const riskStars=b.risk>0?`<span class="br">${'★'.repeat(b.risk)}${'☆'.repeat(3-b.risk)}</span>`:'';
+      let incTxt='';
+      if(b.cat==='infra'){
+        incTxt=`<span class="bi">評価+${b.repBonus||0}</span>`;
+      } else if(b.baseRent>0){
+        incTxt=`<span class="bi">¥${b.baseRent}/月</span>`;
+      }
       btn.innerHTML=`<div class="bld-ico">${SVGS[id]||''}</div>
         <div class="bld-info">
           <div class="bld-name">${b.name}</div>
@@ -242,36 +439,49 @@ function buildSidebar(){
             <span class="bc">¥${b.cost.toLocaleString()}</span>
             ${incTxt}
             ${b.pop>0?`<span class="bp">👥${b.pop}</span>`:''}
+            ${riskStars}
           </div>
         </div>
-        ${locked?`<div class="lk-badge">ST${b.stage}🔒</div>`:''}`;
+        ${locked?`<div class="lk-badge">T${b.tier}🔒</div>`:''}`;
       if(!locked) btn.onclick=()=>selectBuilding(id);
       sec.appendChild(btn);
     });
     sb.appendChild(sec);
   });
-  // tools
+
+  // Tools
   const ts=document.createElement('div');
   ts.className='sb-sec';
   ts.innerHTML=`<div class="sb-ttl">ツール</div><div class="tool-btns">
-    <button class="tbtn demo" id="demo-btn" onclick="toggleDemolish()">🗑 取り壊しモード</button>
+    <button class="tbtn demo${isDemolish?' on':''}" id="demo-btn" onclick="toggleDemolish()">🗑 取り壊しモード</button>
+    <button class="tbtn repair${isRepairMode?' on':''}" id="repair-btn" onclick="toggleRepair()">🔧 修理モード</button>
     <button class="tbtn rst" onclick="confirmReset()">🔄 リセット</button>
   </div>`;
   sb.appendChild(ts);
 }
 
 function selectBuilding(id){
-  selectedType=id; isDemolish=false;
+  selectedType=id; isDemolish=false; isRepairMode=false;
   document.querySelectorAll('.bld-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll(`.bld-btn[data-id="${id}"]`).forEach(b=>b.classList.add('active'));
-  const db=document.getElementById('demo-btn');
-  if(db) db.classList.remove('on');
+  const db=document.getElementById('demo-btn'); if(db) db.classList.remove('on');
+  const rb=document.getElementById('repair-btn'); if(rb) rb.classList.remove('on');
 }
+
 function toggleDemolish(){
-  isDemolish=!isDemolish;
-  const db=document.getElementById('demo-btn');
-  if(db) db.classList.toggle('on',isDemolish);
+  isDemolish=!isDemolish; isRepairMode=false;
+  const db=document.getElementById('demo-btn'); if(db) db.classList.toggle('on',isDemolish);
+  const rb=document.getElementById('repair-btn'); if(rb) rb.classList.remove('on');
+  if(isDemolish) document.querySelectorAll('.bld-btn').forEach(b=>b.classList.remove('active'));
   notify(isDemolish?'🗑 取り壊しモード':'✏️ 建設モード', isDemolish?'rd':'gd');
+}
+
+function toggleRepair(){
+  isRepairMode=!isRepairMode; isDemolish=false;
+  const rb=document.getElementById('repair-btn'); if(rb) rb.classList.toggle('on',isRepairMode);
+  const db=document.getElementById('demo-btn'); if(db) db.classList.remove('on');
+  if(isRepairMode) document.querySelectorAll('.bld-btn').forEach(b=>b.classList.remove('active'));
+  notify(isRepairMode?'🔧 修理モード':'✏️ 建設モード', isRepairMode?'pu':'gd');
 }
 
 // ==================== RESIZE ====================
@@ -280,92 +490,50 @@ function resize(){
   VW=wrap.offsetWidth; VH=wrap.offsetHeight;
   bgC.width=cityC.width=uiC.width=VW;
   bgC.height=cityC.height=uiC.height=VH;
-  clampCam();
-  drawBg(); drawCity();
+  clampCam(); drawBg(); drawCity();
 }
-
 function clampCam(){
   cam.x=Math.max(0,Math.min(cam.x, MAP_W-VW));
   cam.y=Math.max(0,Math.min(cam.y, MAP_H-VH));
 }
 
-// ==================== BACKGROUND / MAP ====================
-// Pre-generate terrain
-const TERRAIN={}; // key -> 'grass'|'water'|'sand'|'mountain_bg'
-
-function generateTerrain(){
-  // Simple noise-like terrain using sin/cos combos
-  for(let cy=0;cy<MAP_ROWS;cy++){
-    for(let cx=0;cx<MAP_COLS;cx++){
-      const nx=cx/MAP_COLS, ny=cy/MAP_ROWS;
-      // ocean on edges and low noise areas
-      const v=Math.sin(nx*6+1.2)*Math.cos(ny*5+0.7)
-             +Math.sin(nx*12+0.3)*Math.cos(ny*8+1.5)*0.5
-             +Math.sin((nx+ny)*9+2)*0.3;
-      // mountains on high noise
-      const mv=Math.sin(nx*8+2)*Math.cos(ny*6+1)+Math.sin(nx*3)*0.5;
-      let t='grass';
-      if(v<-0.7) t='water';
-      else if(v<-0.5) t='sand';
-      else if(mv>1.2) t='hill';
-      TERRAIN[`${cx},${cy}`]=t;
-    }
-  }
-  // force ocean border
-  for(let cx=0;cx<MAP_COLS;cx++){
-    TERRAIN[`${cx},0`]='water';
-    TERRAIN[`${cx},${MAP_ROWS-1}`]='water';
-  }
-  for(let cy=0;cy<MAP_ROWS;cy++){
-    TERRAIN[`0,${cy}`]='water';
-    TERRAIN[`${MAP_COLS-1},${cy}`]='water';
-  }
-}
-
-const TERRAIN_COLORS={
-  grass:'#3a6b3a', water:'#1a6fa0', sand:'#c2a46b', hill:'#6b7d6b'
-};
-const TERRAIN_DARK={
-  grass:'#2e5430', water:'#154d72', sand:'#a8884a', hill:'#546059'
-};
-
+// ==================== BACKGROUND DRAWING ====================
 function drawBg(){
   bgX.clearRect(0,0,VW,VH);
-  // sky gradient at top (above map if scrolled)
   const skyH=Math.max(0,-cam.y);
   if(skyH>0){
     const sg=bgX.createLinearGradient(0,0,0,skyH);
     sg.addColorStop(0,'#0a0a1a'); sg.addColorStop(1,'#1a2a4a');
     bgX.fillStyle=sg; bgX.fillRect(0,0,VW,skyH);
   }
-
-  // visible cell range
   const c0=Math.floor(cam.x/GRID), r0=Math.floor(cam.y/GRID);
   const c1=Math.min(MAP_COLS-1, c0+Math.ceil(VW/GRID)+1);
   const r1=Math.min(MAP_ROWS-1, r0+Math.ceil(VH/GRID)+1);
-
   for(let r=r0;r<=r1;r++){
     for(let c=c0;c<=c1;c++){
       const t=TERRAIN[`${c},${r}`]||'grass';
       const sx=c*GRID-cam.x, sy=r*GRID-cam.y;
-      // base color
-      bgX.fillStyle=TERRAIN_COLORS[t];
-      bgX.fillRect(sx,sy,GRID,GRID);
-      // subtle shading
-      bgX.fillStyle=TERRAIN_DARK[t];
-      bgX.fillRect(sx,sy,1,GRID);
-      bgX.fillRect(sx,sy,GRID,1);
-      // water waves
+      bgX.fillStyle=TERRAIN_COLORS[t]; bgX.fillRect(sx,sy,GRID,GRID);
+      bgX.fillStyle=TERRAIN_DARK[t]; bgX.fillRect(sx,sy,1,GRID); bgX.fillRect(sx,sy,GRID,1);
       if(t==='water'){
         const wv=(animFrame/40+(c*0.3+r*0.5))%1;
         bgX.fillStyle=`rgba(100,180,255,${0.1+wv*0.15})`;
         bgX.fillRect(sx+3,sy+GRID/2-2,GRID-6,3);
       }
-      // grid line
-      bgX.strokeStyle='rgba(0,0,0,0.08)'; bgX.lineWidth=0.5;
-      bgX.strokeRect(sx,sy,GRID,GRID);
+      bgX.strokeStyle='rgba(0,0,0,0.08)'; bgX.lineWidth=0.5; bgX.strokeRect(sx,sy,GRID,GRID);
     }
   }
+  // District boundary lines
+  bgX.strokeStyle='rgba(255,255,255,0.12)'; bgX.lineWidth=1; bgX.setLineDash([6,4]);
+  for(let dx=1;dx<DIST_COLS;dx++){
+    const sx=dx*DIST_W*GRID-cam.x;
+    if(sx>0&&sx<VW){ bgX.beginPath(); bgX.moveTo(sx,0); bgX.lineTo(sx,VH); bgX.stroke(); }
+  }
+  for(let dy=1;dy<DIST_ROWS;dy++){
+    const sy=dy*DIST_H*GRID-cam.y;
+    if(sy>0&&sy<VH){ bgX.beginPath(); bgX.moveTo(0,sy); bgX.lineTo(VW,sy); bgX.stroke(); }
+  }
+  bgX.setLineDash([]);
 }
 
 // ==================== DRAW BUILDINGS ====================
@@ -393,7 +561,6 @@ function drawBuilding(ctx,id,gx,gy,cx,cy){
     case 'road':{
       ctx.fillStyle='#1a1a1a'; ctx.fillRect(gx,gy,G,G);
       ctx.fillStyle='#252525'; ctx.fillRect(gx+1,gy+1,G-2,G-2);
-      // animated cars
       const cp=(animFrame*0.5+cx*7)%(G+10)-5;
       ctx.fillStyle='#ef5350'; ctx.fillRect(gx+cp,gy+G/2-4,8,4);
       const cp2=(animFrame*0.3+cy*11+20)%(G+10)-5;
@@ -406,7 +573,6 @@ function drawBuilding(ctx,id,gx,gy,cx,cy){
     case 'park':{
       ctx.fillStyle='#2e7d32'; ctx.fillRect(gx,gy,G,G);
       ctx.fillStyle='#9e8a6a'; ctx.fillRect(gx+G/2-3,gy,6,G); ctx.fillRect(gx,gy+G/2-3,G,6);
-      // animated people
       const pp=(animFrame*0.4+cx*5)%(G-8);
       ctx.fillStyle='#fff'; ctx.beginPath();ctx.arc(gx+4+pp,gy+G/2-1,2,0,Math.PI*2);ctx.fill();
       [[10,G-18,8],[G-10,G-18,8],[G/2,10,10]].forEach(([tx,ty,r])=>{
@@ -415,38 +581,29 @@ function drawBuilding(ctx,id,gx,gy,cx,cy){
       });
       break;}
     case 'mountain':{
-      // Snow capped mountain
       ctx.fillStyle='#546e7a'; ctx.fillRect(gx,gy,G,G);
       ctx.fillStyle='#78909c';
       ctx.beginPath();ctx.moveTo(gx+G/2,gy+2);ctx.lineTo(gx+2,gy+G-2);ctx.lineTo(gx+G-2,gy+G-2);ctx.closePath();ctx.fill();
       ctx.fillStyle='#607d8b';
       ctx.beginPath();ctx.moveTo(gx+G*0.7,gy+8);ctx.lineTo(gx+G*0.4,gy+G-2);ctx.lineTo(gx+G-2,gy+G-2);ctx.closePath();ctx.fill();
-      // snow cap
       ctx.fillStyle='white';
       ctx.beginPath();ctx.moveTo(gx+G/2,gy+2);ctx.lineTo(gx+G/2-6,gy+12);ctx.lineTo(gx+G/2+6,gy+12);ctx.closePath();ctx.fill();
-      // cloud
       const ca=.5+Math.sin(t*.5+cx)*.3;
       ctx.fillStyle=`rgba(255,255,255,${ca})`;
       ctx.beginPath();ctx.ellipse(gx+G/2+4,gy+6,5,3,0,0,Math.PI*2);ctx.fill();
       break;}
     case 'ocean':{
-      // Beach + ocean
-      // sand
       ctx.fillStyle='#f5deb3'; ctx.fillRect(gx,gy,G,G/3+4);
-      // water gradient
       const wg=ctx.createLinearGradient(0,gy+G/3,0,gy+G);
       wg.addColorStop(0,'#039be5'); wg.addColorStop(1,'#01579b');
       ctx.fillStyle=wg; ctx.fillRect(gx,gy+G/3,G,G-G/3);
-      // waves
       const wt=(animFrame/30+cx*.5)%1;
       ctx.strokeStyle=`rgba(255,255,255,${.3+wt*.4})`; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
       ctx.beginPath();ctx.moveTo(gx,gy+G/2+wt*6);ctx.lineTo(gx+G,gy+G/2+wt*6);ctx.stroke();
       ctx.beginPath();ctx.moveTo(gx,gy+G*0.7+(1-wt)*5);ctx.lineTo(gx+G,gy+G*0.7+(1-wt)*5);ctx.stroke();
       ctx.setLineDash([]);
-      // sun reflection
       ctx.fillStyle=`rgba(255,220,80,${.1+Math.sin(t+cx)*.05})`;
       ctx.fillRect(gx+G/2-3,gy+G/3,6,G-G/3);
-      // umbrella
       ctx.fillStyle='#e53935'; ctx.beginPath();ctx.ellipse(gx+8,gy+8,7,4,-.3,0,Math.PI);ctx.fill();
       ctx.strokeStyle='#795548'; ctx.lineWidth=1; ctx.setLineDash([]);
       ctx.beginPath();ctx.moveTo(gx+8,gy+8);ctx.lineTo(gx+10,gy+18);ctx.stroke();
@@ -471,16 +628,14 @@ function drawBuilding(ctx,id,gx,gy,cx,cy){
       ctx.fillStyle='#f5f5f5'; ctx.fillRect(gx+3,gy+8,G-6,G-9);
       ctx.fillStyle='#c62828'; ctx.fillRect(gx+3,gy+8,G-6,7);
       ctx.fillStyle='white'; ctx.fillRect(gx+G/2-1.5,gy+9,3,5); ctx.fillRect(gx+G/2-4,gy+10.5,8,2);
-      ctx.fillStyle='#90caf9';
-      ctx.fillRect(gx+5,gy+18,7,6); ctx.fillRect(gx+G-12,gy+18,7,6);
+      ctx.fillStyle='#90caf9'; ctx.fillRect(gx+5,gy+18,7,6); ctx.fillRect(gx+G-12,gy+18,7,6);
       break;}
     case 'school':{
       ctx.fillStyle='#fff8e1'; ctx.fillRect(gx+2,gy+12,G-4,G-13);
       ctx.fillStyle='#f9a825'; ctx.fillRect(gx+2,gy+8,G-4,6);
       ctx.fillStyle='#e65100';
       ctx.beginPath();ctx.moveTo(gx+G/2,gy+2);ctx.lineTo(gx+2,gy+10);ctx.lineTo(gx+G-2,gy+10);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#90caf9';
-      ctx.fillRect(gx+5,gy+16,8,7); ctx.fillRect(gx+G-13,gy+16,8,7);
+      ctx.fillStyle='#90caf9'; ctx.fillRect(gx+5,gy+16,8,7); ctx.fillRect(gx+G-13,gy+16,8,7);
       break;}
     case 'condo':{
       ctx.fillStyle='#263238'; ctx.fillRect(gx+G/2-8,gy+1,16,G-2);
@@ -568,7 +723,6 @@ function drawBuilding(ctx,id,gx,gy,cx,cy){
         ctx.fillStyle=`rgba(144,202,249,${.5+Math.sin(t+i)*.3})`;
         ctx.fillRect(gx+5+i*8,gy+G-27,5,8);
       }
-      // plane animation
       const px=(animFrame*1.2+cx*13)%(G+20)-10;
       ctx.fillStyle='#eceff1'; ctx.fillRect(gx+px,gy+4,10,4);
       ctx.fillStyle='#b0bec5';
@@ -589,6 +743,16 @@ function drawCity(){
       if(state.grid[key]){
         const sx=c*GRID-cam.x, sy=r*GRID-cam.y;
         drawBuilding(cityX, state.grid[key], sx, sy, c, r);
+        // Condition indicator dot
+        const prop=state.properties[key];
+        if(prop){
+          const cond=prop.condition;
+          const color=cond>=70?'#3fb950':cond>=40?'#f0b429':cond>=20?'#f85149':'#666';
+          cityX.fillStyle=color;
+          cityX.beginPath(); cityX.arc(sx+GRID-5, sy+5, 3, 0, Math.PI*2); cityX.fill();
+          cityX.strokeStyle='rgba(0,0,0,0.5)'; cityX.lineWidth=0.5;
+          cityX.beginPath(); cityX.arc(sx+GRID-5, sy+5, 3, 0, Math.PI*2); cityX.stroke();
+        }
       }
     }
   }
@@ -599,7 +763,6 @@ function drawMinimap(){
   const mw=160, mh=100;
   const sx=mw/MAP_COLS, sy=mh/MAP_ROWS;
   mmX.clearRect(0,0,mw,mh);
-  // terrain
   for(let r=0;r<MAP_ROWS;r++){
     for(let c=0;c<MAP_COLS;c++){
       const t=TERRAIN[`${c},${r}`]||'grass';
@@ -608,18 +771,31 @@ function drawMinimap(){
       mmX.fillRect(c*sx,r*sy,sx+.5,sy+.5);
     }
   }
-  // buildings
+  // District reputation overlay
+  const dsx=DIST_W*sx, dsy=DIST_H*sy;
+  for(let dy=0;dy<DIST_ROWS;dy++){
+    for(let dx=0;dx<DIST_COLS;dx++){
+      const dist=state.districts[`${dx},${dy}`];
+      if(dist){
+        const rep=dist.reputation;
+        if(rep>55){
+          mmX.fillStyle=`rgba(63,185,80,${(rep-55)/100*0.3})`;
+        } else if(rep<45){
+          mmX.fillStyle=`rgba(248,81,73,${(45-rep)/100*0.3})`;
+        } else { continue; }
+        mmX.fillRect(dx*dsx,dy*dsy,dsx,dsy);
+      }
+    }
+  }
+  // Buildings
   for(const key in state.grid){
     const[c,r]=key.split(',').map(Number);
     mmX.fillStyle='#f0b429';
     mmX.fillRect(c*sx,r*sy,sx+.5,sy+.5);
   }
-  // viewport rect
+  // Viewport rect
   mmX.strokeStyle='rgba(255,255,255,0.6)'; mmX.lineWidth=1;
-  mmX.strokeRect(
-    cam.x/MAP_W*mw, cam.y/MAP_H*mh,
-    VW/MAP_W*mw, VH/MAP_H*mh
-  );
+  mmX.strokeRect(cam.x/MAP_W*mw, cam.y/MAP_H*mh, VW/MAP_W*mw, VH/MAP_H*mh);
 }
 
 // ==================== MOUSE / DRAG ====================
@@ -641,9 +817,7 @@ wrap.addEventListener('mousemove',e=>{
   const dx=e.clientX-dragStart.x, dy=e.clientY-dragStart.y;
   if(Math.abs(dx)>3||Math.abs(dy)>3) dragging=true;
   if(dragging&&e.buttons===1){
-    cam.x=camStart.x-dx;
-    cam.y=camStart.y-dy;
-    clampCam();
+    cam.x=camStart.x-dx; cam.y=camStart.y-dy; clampCam();
   }
   // tooltip
   const rect=wrap.getBoundingClientRect();
@@ -651,16 +825,31 @@ wrap.addEventListener('mousemove',e=>{
   const key=`${cx},${cy}`;
   const tt=document.getElementById('tooltip');
   if(state.grid[key]&&!dragging){
+    const prop=state.properties[key];
     const b=BUILDINGS.find(x=>x.id===state.grid[key]);
+    if(!b||!prop){tt.style.display='none';return;}
     document.getElementById('tt-name').textContent=b.name;
-    if(b.nature){
-      document.getElementById('tt-inc').textContent=`${b.desc} (今: +${(state.population*b.mult).toLocaleString()}/秒)`;
+    document.getElementById('tt-val').innerHTML=`<span>¥${Math.floor(prop.value).toLocaleString()}</span>`;
+    const changePct=((prop.value-prop.purchasePrice)/prop.purchasePrice*100).toFixed(1);
+    const changeClass=changePct>=0?'up':'dn';
+    document.getElementById('tt-cost').textContent=`¥${prop.purchasePrice.toLocaleString()}`;
+    document.getElementById('tt-change').innerHTML=`<span class="${changeClass}">${changePct>=0?'+':''}${changePct}%</span>`;
+    if(b.baseRent>0){
+      const monthlyRent=calcPropertyRent(key);
+      document.getElementById('tt-rent').textContent=`¥${Math.floor(monthlyRent).toLocaleString()}`;
+      document.getElementById('tt-rent-row').style.display='';
+      document.getElementById('tt-vac').textContent=`${prop.vacancy.toFixed(1)}%`;
+      document.getElementById('tt-vac-row').style.display='';
     } else {
-      document.getElementById('tt-inc').textContent=`¥${b.income}/秒`;
+      document.getElementById('tt-rent-row').style.display='none';
+      document.getElementById('tt-vac-row').style.display='none';
     }
-    document.getElementById('tt-pop').textContent=b.pop;
-    tt.style.left=Math.min(e.clientX-rect.left+12,VW-200)+'px';
-    tt.style.top=Math.max(e.clientY-rect.top-80,4)+'px';
+    document.getElementById('tt-cond').textContent=`${Math.floor(prop.condition)}/100`;
+    const dk=getDistrictKey(cx,cy);
+    const distRep=state.districts[dk]?state.districts[dk].reputation:50;
+    document.getElementById('tt-dist').textContent=`${getDistrictName(dk)} ${Math.floor(distRep)}/100`;
+    tt.style.left=Math.min(e.clientX-rect.left+12,VW-230)+'px';
+    tt.style.top=Math.max(e.clientY-rect.top-120,4)+'px';
     tt.style.display='block';
   } else tt.style.display='none';
 });
@@ -680,7 +869,7 @@ wrap.addEventListener('mouseleave',()=>{
   dragging=false; wrap.style.cursor='crosshair';
 });
 
-// touch drag
+// Touch support
 let touch0={x:0,y:0};
 wrap.addEventListener('touchstart',e=>{
   touch0={x:e.touches[0].clientX,y:e.touches[0].clientY};
@@ -702,116 +891,496 @@ wrap.addEventListener('touchend',e=>{
   }
 });
 
-// minimap click to teleport
 mm.addEventListener('click',e=>{
   const rect=mm.getBoundingClientRect();
   const fx=(e.clientX-rect.left)/160, fy=(e.clientY-rect.top)/100;
-  cam.x=fx*MAP_W - VW/2;
-  cam.y=fy*MAP_H - VH/2;
-  clampCam();
+  cam.x=fx*MAP_W - VW/2; cam.y=fy*MAP_H - VH/2; clampCam();
 });
 
+// ==================== CLICK HANDLING ====================
 function handleClick(key,cx,cy,screenX,screenY){
+  // Demolish mode
   if(isDemolish){
     if(state.grid[key]){
+      const prop=state.properties[key];
+      const refund=Math.floor((prop?prop.value:0)*0.4);
       const b=BUILDINGS.find(x=>x.id===state.grid[key]);
-      state.money+=Math.floor(b.cost*.4);
-      state.population-=b.pop||0;
+      state.money+=refund;
+      state.population-=(b?b.pop:0);
       delete state.grid[key];
-      state.placedCount=Object.keys(state.grid).length;
-      updateUI(); notify('🗑 取り壊し (+40%返還)','rd');
+      delete state.properties[key];
+      updateUI(); buildSidebar();
+      notify(`🗑 取り壊し (+¥${refund.toLocaleString()} 返還)`,'rd');
     }
     return;
   }
+  // Repair mode
+  if(isRepairMode){
+    if(state.grid[key]&&state.properties[key]){
+      const prop=state.properties[key];
+      if(prop.condition>=99){notify('✅ 修理不要','gd');return;}
+      const b=BUILDINGS.find(x=>x.id===prop.type);
+      const repairCost=Math.floor(b.cost*(100-prop.condition)/100*0.3);
+      if(state.money<repairCost){notify(`💸 修理費 ¥${repairCost.toLocaleString()} 不足`,'rd');return;}
+      state.money-=repairCost;
+      prop.condition=100;
+      updateUI(); buildSidebar();
+      notify(`🔧 修理完了 (-¥${repairCost.toLocaleString()})`,'gr');
+      spawnFloat(screenX,screenY,`-¥${repairCost.toLocaleString()}`,true);
+    }
+    return;
+  }
+  // Build mode
   if(state.grid[key]){notify('⚠ すでに建物があります','rd');return;}
   const b=BUILDINGS.find(x=>x.id===selectedType);
   if(!b)return;
-  if(b.stage>state.stage){notify('🔒 このステージでは未解放','rd');return;}
-  if(state.money<b.cost){notify('💸 予算が足りません！','rd');return;}
-  // check terrain - can't build on water
+  if(b.tier>state.maxMilestone){notify('🔒 マイルストーン未達で未解放','rd');return;}
   const terrain=TERRAIN[key]||'grass';
-  if(terrain==='water'&&!['ocean'].includes(selectedType)){
-    notify('🌊 海には建物を建てられません！','rd');return;
+  if(terrain==='water'&&selectedType!=='ocean'){notify('🌊 海には建てられません','rd');return;}
+
+  // Auto-borrow if needed
+  if(state.money<b.cost){
+    const needed=b.cost-state.money;
+    const maxBorrow=calcMaxLoan()-state.loanBalance;
+    if(needed<=maxBorrow){
+      borrowMoney(needed);
+      notify(`💳 ¥${Math.floor(needed).toLocaleString()} 自動借入`,'gd');
+    } else {
+      notify('💸 予算も借入枠も不足！','rd');
+      return;
+    }
   }
+
   state.money-=b.cost;
-  state.population+=b.pop||0;
+  state.population+=(b.pop||0);
   state.grid[key]=selectedType;
-  state.placedCount=Object.keys(state.grid).length;
-  updateUI();
+  state.properties[key]={
+    type:selectedType,
+    purchasePrice:b.cost,
+    value:b.cost,
+    vacancy: b.baseRent>0 ? 30 : 0,
+    condition:100,
+    monthsOwned:0,
+  };
+  updateUI(); buildSidebar();
   notify(`✅ ${b.name} 建設 (-¥${b.cost.toLocaleString()})`,'gr');
   spawnFloat(screenX,screenY,`-¥${b.cost.toLocaleString()}`,true);
 }
 
-// ==================== INCOME ====================
-function calcIncome(){
-  let t=0;
-  let natureCounts={road:0,park:0,mountain:0,ocean:0};
-  for(const id of Object.values(state.grid)){
-    const b=BUILDINGS.find(x=>x.id===id);
-    if(!b)continue;
-    if(b.nature) natureCounts[id]=(natureCounts[id]||0)+1;
-    else if(b.stage===1) t+=b.income;
-  }
-  // ST2以降は自然施設のmultを1/100にする
-  const naturalMultFactor = state.stage >= 2 ? 0.001 : 1;
-  for(const [nid,cnt] of Object.entries(natureCounts)){
-    const b=BUILDINGS.find(x=>x.id===nid);
-    if(b&&b.mult) t+=state.population*b.mult*naturalMultFactor*cnt;
-  }
-  return t;
+// ==================== NET WORTH & MILESTONES ====================
+function calcTotalAssets(){
+  let total=0;
+  for(const prop of Object.values(state.properties)) total+=prop.value;
+  return total;
 }
 
-let lastTick2=Date.now();
-function incomeTick(){
-  const now=Date.now();
-  const dt=(now-lastTick2)/1000;
-  lastTick2=now;
-  const inc=calcIncome();
-  if(inc>0){
-    const earned=inc*dt;
-    state.money+=earned;
-    state.totalEarned+=earned;
-    updateUI();
-    checkStage();
+function calcNetWorth(){
+  return state.money + calcTotalAssets() - state.loanBalance;
+}
+
+function getMilestoneIndex(){
+  const nw=calcNetWorth();
+  for(let i=MILESTONES.length-1;i>=0;i--){
+    if(nw>=MILESTONES[i].threshold) return i;
+  }
+  return -1;
+}
+
+function checkMilestones(){
+  const idx=getMilestoneIndex();
+  if(idx>state.maxMilestone){
+    state.maxMilestone=idx;
+    showMilestoneModal(idx);
+    buildSidebar();
   }
 }
 
-// ==================== STAGE ====================
-function checkStage(){
-  const stg=STAGES[state.stage-1];
-  if(!stg.goal)return;
-  if(state.totalEarned>=stg.goal&&state.stage<STAGES.length) showModal();
-}
-function showModal(){
-  document.getElementById('m-title').textContent=`ステージ ${state.stage} クリア！`;
-  document.getElementById('m-desc').textContent=`¥${Math.floor(state.money).toLocaleString()} 獲得！\n新しい建物が解放されます。`;
-  document.getElementById('m-stars').textContent='⭐'.repeat(Math.min(state.stage,5));
+function showMilestoneModal(idx){
+  gamePaused=true;
+  const m=MILESTONES[idx];
+  document.getElementById('m-stars').textContent='⭐'.repeat(idx+1);
+  document.getElementById('m-title').textContent='MILESTONE!';
+  document.getElementById('m-desc').textContent=`「${m.title}」に昇格！\n新しい建物が解放されます。\n純資産: ¥${Math.floor(calcNetWorth()).toLocaleString()}`;
+  document.getElementById('m-btn').textContent='OK →';
+  document.getElementById('m-btn').onclick=closeModal;
   document.getElementById('modal').classList.add('show');
 }
-function nextStage(){
+
+function closeModal(){
   document.getElementById('modal').classList.remove('show');
-  state.stage++; state.totalEarned=0;
-  state.money = 500; // ST2以降は極貧スタート！
+  gamePaused=false;
+}
+
+// ==================== LOAN SYSTEM ====================
+function calcLoanRate(){
+  const riskPremium=(850-state.creditScore)/850*7;
+  return Math.max(0.5,(3+riskPremium+state.rateMod))/100;
+}
+
+function calcMaxLoan(){
+  const assets=calcTotalAssets();
+  return (state.creditScore/850)*Math.max(assets*2, 10000);
+}
+
+function borrowMoney(amount){
+  const newRate=calcLoanRate();
+  if(state.loanBalance>0){
+    state.loanRate=(state.loanBalance*state.loanRate+amount*newRate)/(state.loanBalance+amount);
+  } else {
+    state.loanRate=newRate;
+  }
+  state.loanBalance+=amount;
+  state.money+=amount;
+}
+
+function repayLoan(amount){
+  const actual=Math.min(amount, state.loanBalance, state.money);
+  if(actual<=0) return;
+  state.money-=actual;
+  state.loanBalance-=actual;
+  if(state.loanBalance<=0){ state.loanBalance=0; state.loanRate=0; }
+}
+
+function openLoanDialog(){
+  gamePaused=true;
+  updateLoanDialog();
+  document.getElementById('loan-modal').classList.add('show');
+}
+
+function closeLoanDialog(){
+  document.getElementById('loan-modal').classList.remove('show');
+  gamePaused=false;
   updateUI(); buildSidebar();
-  notify(`🎉 ステージ${state.stage}へ！予算リセット！`,'pu');
+}
+
+function updateLoanDialog(){
+  const maxNew=Math.floor(calcMaxLoan()-state.loanBalance);
+  const rate=calcLoanRate();
+  const monthlyPayment=state.loanBalance>0 ? state.loanBalance*(state.loanRate/12+0.005) : 0;
+  const body=document.getElementById('loan-body');
+  body.innerHTML=`
+    <div class="loan-grid">
+      <div><span class="loan-lbl">信用スコア</span><div class="loan-val gold">${state.creditScore}</div></div>
+      <div><span class="loan-lbl">現在の借入残高</span><div class="loan-val red">¥${Math.floor(state.loanBalance).toLocaleString()}</div></div>
+      <div><span class="loan-lbl">金利 (年)</span><div class="loan-val">${(rate*100).toFixed(2)}%</div></div>
+      <div><span class="loan-lbl">月々の返済</span><div class="loan-val red">¥${Math.floor(monthlyPayment).toLocaleString()}</div></div>
+      <div><span class="loan-lbl">追加借入可能額</span><div class="loan-val green">¥${maxNew.toLocaleString()}</div></div>
+      <div><span class="loan-lbl">現金</span><div class="loan-val gold">¥${Math.floor(state.money).toLocaleString()}</div></div>
+    </div>
+    <hr class="loan-sep">
+    <div class="loan-row"><label>借入額:</label><input type="number" id="borrow-amt" min="0" max="${maxNew}" value="${Math.min(maxNew,10000)}" step="1000"></div>
+    <button class="modal-btn" style="width:100%;margin-bottom:12px" onclick="doBorrow()">💰 借入する</button>
+    ${state.loanBalance>0?`
+    <hr class="loan-sep">
+    <div class="loan-row"><label>返済額:</label><input type="number" id="repay-amt" min="0" max="${Math.floor(Math.min(state.loanBalance,state.money))}" value="${Math.floor(Math.min(state.loanBalance,state.money))}" step="1000"></div>
+    <button class="modal-btn secondary" style="width:100%" onclick="doRepay()">💳 返済する</button>
+    `:''}`;
+}
+
+function doBorrow(){
+  const input=document.getElementById('borrow-amt');
+  const amt=Math.floor(Number(input.value));
+  const maxNew=Math.floor(calcMaxLoan()-state.loanBalance);
+  if(amt<=0||amt>maxNew){notify('⚠ 無効な借入額','rd');return;}
+  borrowMoney(amt);
+  notify(`💰 ¥${amt.toLocaleString()} 借入完了`,'gr');
+  updateLoanDialog();
+}
+
+function doRepay(){
+  const input=document.getElementById('repay-amt');
+  const amt=Math.floor(Number(input.value));
+  if(amt<=0){notify('⚠ 無効な返済額','rd');return;}
+  repayLoan(amt);
+  notify(`💳 ¥${amt.toLocaleString()} 返済完了`,'gr');
+  updateLoanDialog();
+}
+
+// ==================== RENT & VACANCY ====================
+function calcPropertyRent(key){
+  const prop=state.properties[key];
+  if(!prop) return 0;
+  const b=BUILDINGS.find(x=>x.id===prop.type);
+  if(!b||b.baseRent<=0) return 0;
+  const[cx,cy]=key.split(',').map(Number);
+  const dk=getDistrictKey(cx,cy);
+  const distRep=(state.districts[dk]?state.districts[dk].reputation:50)/50;
+  const condMult=prop.condition>=20 ? Math.max(0.3, prop.condition/100) : 0;
+  const popMult=1+state.population/5000;
+  return b.baseRent*(1-prop.vacancy/100)*distRep*condMult*popMult;
+}
+
+function updateVacancy(){
+  for(const[key,prop] of Object.entries(state.properties)){
+    const b=BUILDINGS.find(x=>x.id===prop.type);
+    if(!b||b.baseRent<=0) continue;
+    const[cx,cy]=key.split(',').map(Number);
+    const dk=getDistrictKey(cx,cy);
+    const distRep=state.districts[dk]?state.districts[dk].reputation:50;
+    let delta=-2; // natural fill rate
+    delta+=(distRep-50)/100*5; // district factor
+    if(prop.condition<50) delta+=(50-prop.condition)/50*5; // condition penalty
+    delta+=(Math.random()-0.5)*6; // random noise ±3
+    if(state.vacancyModMonths>0) delta+=state.vacancyMod;
+    prop.vacancy=Math.max(0, Math.min(100, prop.vacancy+delta));
+  }
+}
+
+// ==================== PROPERTY VALUES ====================
+function calcAdjacencyBonus(cx,cy){
+  let bonus=0;
+  for(let dx=-1;dx<=1;dx++){
+    for(let dy=-1;dy<=1;dy++){
+      if(dx===0&&dy===0) continue;
+      const nk=`${cx+dx},${cy+dy}`;
+      const np=state.properties[nk];
+      if(np){
+        const nb=BUILDINGS.find(x=>x.id===np.type);
+        if(nb&&nb.cat==='infra') bonus+=0.005;
+        else bonus+=0.002;
+      }
+    }
+  }
+  return bonus;
+}
+
+function updatePropertyValues(){
+  for(const[key,prop] of Object.entries(state.properties)){
+    const[cx,cy]=key.split(',').map(Number);
+    const dk=getDistrictKey(cx,cy);
+    const distRep=state.districts[dk]?state.districts[dk].reputation:50;
+    const distGrowth=(distRep-50)/1000; // -5% to +5% mapped from reputation 0-100
+    const adjBonus=calcAdjacencyBonus(cx,cy);
+    const marketNoise=(Math.random()-0.5)*0.06; // ±3%
+    let marketEvent=0;
+    if(state.marketModMonths>0) marketEvent=state.marketMod;
+    const totalGrowth=distGrowth+adjBonus+marketNoise+marketEvent;
+    prop.value=Math.max(prop.purchasePrice*0.1, prop.value*(1+totalGrowth));
+  }
+}
+
+// ==================== BUILDING CONDITION ====================
+function degradeBuildings(){
+  for(const prop of Object.values(state.properties)){
+    const b=BUILDINGS.find(x=>x.id===prop.type);
+    const rate=b&&b.cat==='infra'?0.5:1;
+    prop.condition=Math.max(0, prop.condition-rate);
+  }
+}
+
+// ==================== EVENTS ====================
+function rollForEvent(){
+  if(Math.random()>0.30) return; // 30% chance per month
+  const totalWeight=EVENT_TYPES.reduce((s,e)=>s+e.weight,0);
+  let roll=Math.random()*totalWeight;
+  for(const ev of EVENT_TYPES){
+    roll-=ev.weight;
+    if(roll<=0){ executeEvent(ev); return; }
+  }
+}
+
+function executeEvent(ev){
+  let detail='';
+  switch(ev.id){
+    case 'boom':
+      state.marketMod=0.03; state.marketModMonths=3;
+      detail='全物件の価値が上昇中 (3ヶ月間)';
+      break;
+    case 'crash':
+      state.marketMod=-0.05; state.marketModMonths=6;
+      detail='全物件の価値が下落中 (6ヶ月間)';
+      break;
+    case 'quake':{
+      const dks=Object.keys(state.districts);
+      const dk=dks[Math.floor(Math.random()*dks.length)];
+      const[ddx,ddy]=dk.split(',').map(Number);
+      let damaged=0;
+      for(let cy=ddy*DIST_H;cy<Math.min((ddy+1)*DIST_H,MAP_ROWS);cy++){
+        for(let cx=ddx*DIST_W;cx<Math.min((ddx+1)*DIST_W,MAP_COLS);cx++){
+          const prop=state.properties[`${cx},${cy}`];
+          if(prop){ prop.condition=Math.max(0,prop.condition-(20+Math.random()*30)); damaged++; }
+        }
+      }
+      detail=`${getDistrictName(dk)}地区: ${damaged}棟に被害`;
+      break;
+    }
+    case 'fire':{
+      const keys=Object.keys(state.properties);
+      if(keys.length===0){detail='被害なし';break;}
+      const key=keys[Math.floor(Math.random()*keys.length)];
+      const prop=state.properties[key];
+      const b=BUILDINGS.find(x=>x.id===prop.type);
+      prop.condition=Math.max(0,prop.condition-60-Math.random()*30);
+      detail=`${b?b.name:'建物'}が被害を受けました`;
+      break;
+    }
+    case 'exodus':{
+      const dks=Object.keys(state.districts);
+      const dk=dks[Math.floor(Math.random()*dks.length)];
+      state.districts[dk].reputation=Math.max(0,state.districts[dk].reputation-30);
+      detail=`${getDistrictName(dk)}地区の評判が大幅低下`;
+      break;
+    }
+    case 'redev':{
+      const dks=Object.keys(state.districts);
+      const dk=dks[Math.floor(Math.random()*dks.length)];
+      state.districts[dk].reputation=Math.min(100,state.districts[dk].reputation+20);
+      detail=`${getDistrictName(dk)}地区が再開発で活性化`;
+      break;
+    }
+    case 'rate':{
+      const change=Math.random()>0.5?1:-1;
+      state.rateMod=Math.max(-2,Math.min(3,state.rateMod+change));
+      // Recalculate existing loan rate
+      if(state.loanBalance>0) state.loanRate=calcLoanRate();
+      detail=`金利が${change>0?'上昇':'低下'}しました`;
+      break;
+    }
+    case 'vacancy':{
+      const types=['residential','commercial'];
+      const targetCat=types[Math.floor(Math.random()*types.length)];
+      let affected=0;
+      for(const prop of Object.values(state.properties)){
+        const b=BUILDINGS.find(x=>x.id===prop.type);
+        if(b&&b.cat===targetCat&&b.baseRent>0){
+          prop.vacancy=Math.min(100,prop.vacancy+40);
+          affected++;
+        }
+      }
+      detail=`${targetCat==='residential'?'住居':'商業'}物件の空室率が急増 (${affected}棟)`;
+      break;
+    }
+  }
+  addEventLog(`${ev.icon} ${ev.name}: ${detail}`, ev.type);
+  notify(`${ev.icon} ${ev.name}`, ev.type==='good'?'gr':ev.type==='bad'?'rd':'gd');
+}
+
+function addEventLog(text, type){
+  state.eventLog.unshift({text, type, year:state.year, month:state.month});
+  if(state.eventLog.length>20) state.eventLog.pop();
+  renderEventLog();
+}
+
+function renderEventLog(){
+  const el=document.getElementById('event-log');
+  const recent=state.eventLog.slice(0,5);
+  el.innerHTML=recent.map(e=>`<div class="ev-item ${e.type}"><span class="ev-date">${e.year}Y${e.month}M</span>${e.text}</div>`).join('');
+}
+
+// ==================== MONTHLY TICK ====================
+function monthlyTick(){
+  // Advance time
+  state.month++;
+  if(state.month>12){ state.month=1; state.year++; }
+
+  // Age properties
+  for(const prop of Object.values(state.properties)) prop.monthsOwned++;
+
+  // Update districts
+  updateDistricts();
+
+  // Update property values
+  updatePropertyValues();
+
+  // Update vacancy
+  updateVacancy();
+
+  // Collect rent
+  let totalRent=0;
+  for(const key of Object.keys(state.properties)){
+    const rent=calcPropertyRent(key);
+    if(rent>0) totalRent+=rent;
+  }
+  state.money+=totalRent;
+
+  // Process loans
+  if(state.loanBalance>0){
+    const monthlyInterest=state.loanBalance*state.loanRate/12;
+    const minPrincipal=state.loanBalance*0.005;
+    const payment=monthlyInterest+minPrincipal;
+    if(state.money>=payment){
+      state.money-=payment;
+      state.loanBalance=Math.max(0,state.loanBalance-minPrincipal);
+      if(state.loanBalance<=0) state.loanRate=0;
+      state.creditScore=Math.min(850,state.creditScore+2);
+    } else {
+      // Missed payment
+      state.loanBalance+=monthlyInterest;
+      state.creditScore=Math.max(300,state.creditScore-20);
+      addEventLog('⚠️ 返済不能: 利息が残高に加算されました','bad');
+    }
+  }
+
+  // Degrade buildings
+  degradeBuildings();
+
+  // Decay active modifiers
+  if(state.marketModMonths>0){
+    state.marketModMonths--;
+    if(state.marketModMonths<=0) state.marketMod=0;
+  }
+  if(state.vacancyModMonths>0){
+    state.vacancyModMonths--;
+    if(state.vacancyModMonths<=0) state.vacancyMod=0;
+  }
+
+  // Random event
+  rollForEvent();
+
+  // Credit score from portfolio
+  const assets=calcTotalAssets();
+  if(assets>0) state.creditScore=Math.min(850,state.creditScore+Math.min(3,Math.floor(assets/100000)));
+
+  // Check milestones
+  checkMilestones();
+
+  // Bankruptcy check
+  const nw=calcNetWorth();
+  if(nw<-10000){
+    state.bankruptMonths++;
+    if(state.bankruptMonths>=6) showBankruptModal();
+    else if(state.bankruptMonths>=3) addEventLog('⚠️ 破産警告: 純資産がマイナスです！','bad');
+  } else {
+    state.bankruptMonths=0;
+  }
+
+  // Update everything
+  updateUI();
+  buildSidebar();
+}
+
+function showBankruptModal(){
+  gamePaused=true;
+  document.getElementById('m-stars').textContent='💸💸💸';
+  document.getElementById('m-title').textContent='破産！';
+  document.getElementById('m-desc').textContent=`借入金が資産を大幅に上回りました。\nゲームオーバーです。\n\n最終純資産: ¥${Math.floor(calcNetWorth()).toLocaleString()}`;
+  document.getElementById('m-btn').textContent='リセットして再挑戦';
+  document.getElementById('m-btn').onclick=function(){closeModal();confirmReset();};
+  document.getElementById('modal').classList.add('show');
 }
 
 // ==================== UI ====================
 function updateUI(){
-  document.getElementById('s-money').textContent=Math.floor(state.money).toLocaleString();
-  document.getElementById('s-income').textContent=Math.floor(calcIncome()).toLocaleString();
-  document.getElementById('s-pop').textContent=state.population.toLocaleString();
-  document.getElementById('s-bld').textContent=state.placedCount;
-  document.getElementById('s-stage').textContent=state.stage;
-  const stg=STAGES[state.stage-1];
-  document.getElementById('stage-name').textContent=`ステージ${state.stage}: ${stg.name}`;
-  if(stg.goal){
-    const pct=Math.min(state.totalEarned/stg.goal*100,100);
-    document.getElementById('stage-fill').style.width=pct+'%';
-    document.getElementById('stage-goal-txt').textContent=`目標: ¥${stg.goal.toLocaleString()} (${Math.floor(pct)}%)`;
+  document.getElementById('s-money').textContent=`¥${Math.floor(state.money).toLocaleString()}`;
+  document.getElementById('s-assets').textContent=`¥${Math.floor(calcTotalAssets()).toLocaleString()}`;
+  document.getElementById('s-debt').textContent=`¥${Math.floor(state.loanBalance).toLocaleString()}`;
+  const nw=calcNetWorth();
+  document.getElementById('s-networth').textContent=`¥${Math.floor(nw).toLocaleString()}`;
+  document.getElementById('s-date').textContent=`${state.year}年 ${state.month}月`;
+
+  // Milestone bar
+  const idx=state.maxMilestone;
+  const m=MILESTONES[idx];
+  document.getElementById('milestone-name').textContent=m?m.title:'初心者';
+  if(idx<MILESTONES.length-1){
+    const next=MILESTONES[idx+1];
+    const prev=m?m.threshold:0;
+    const pct=Math.max(0,Math.min(100,(nw-prev)/(next.threshold-prev)*100));
+    document.getElementById('milestone-fill').style.width=pct+'%';
+    document.getElementById('milestone-goal').textContent=`次: 純資産 ¥${next.threshold.toLocaleString()} (${Math.floor(pct)}%)`;
   } else {
-    document.getElementById('stage-fill').style.width='100%';
-    document.getElementById('stage-goal-txt').textContent='最終ステージ — 自由建設！';
+    document.getElementById('milestone-fill').style.width='100%';
+    document.getElementById('milestone-goal').textContent='最高ランク達成！';
   }
 }
 
@@ -825,8 +1394,7 @@ function notify(text,type='gd'){
 function spawnFloat(x,y,text,isDebit){
   const c=document.getElementById('map-wrap');
   const el=document.createElement('div');
-  el.className='ifloat';
-  el.textContent=text;
+  el.className='ifloat'; el.textContent=text;
   el.style.left=x+'px'; el.style.top=y+'px';
   el.style.color=isDebit?'#f85149':'#3fb950';
   c.appendChild(el);
@@ -834,40 +1402,79 @@ function spawnFloat(x,y,text,isDebit){
 }
 
 // ==================== SAVE / LOAD ====================
-const SK='cityArchPro_v3';
+const SK='empireBuilder_v1';
+
 function saveGame(){
   try{
-    localStorage.setItem(SK,JSON.stringify({...state,money:Math.floor(state.money),cam,savedAt:new Date().toISOString()}));
+    const saveData={
+      ...state,
+      money:Math.floor(state.money*100)/100,
+      cam,
+      savedAt:new Date().toISOString()
+    };
+    localStorage.setItem(SK,JSON.stringify(saveData));
     notify('💾 セーブしました！','gr');
   }catch(e){notify('❌ セーブ失敗','rd');}
 }
+
 function loadGame(){
   try{
     const raw=localStorage.getItem(SK);
     if(!raw){notify('📂 セーブデータなし','rd');return;}
     const d=JSON.parse(raw);
-    Object.assign(state,{money:d.money||10000,totalEarned:d.totalEarned||0,population:d.population||0,stage:d.stage||1,grid:d.grid||{},placedCount:Object.keys(d.grid||{}).length});
+    state={
+      money:d.money||10000,
+      year:d.year||1,
+      month:d.month||1,
+      loanBalance:d.loanBalance||0,
+      loanRate:d.loanRate||0,
+      creditScore:d.creditScore||600,
+      maxMilestone:d.maxMilestone||0,
+      population:d.population||0,
+      grid:d.grid||{},
+      properties:d.properties||{},
+      districts:d.districts||{},
+      eventLog:d.eventLog||[],
+      marketMod:d.marketMod||0,
+      marketModMonths:d.marketModMonths||0,
+      vacancyMod:d.vacancyMod||0,
+      vacancyModMonths:d.vacancyModMonths||0,
+      rateMod:d.rateMod||0,
+      bankruptMonths:d.bankruptMonths||0,
+    };
     if(d.cam) Object.assign(cam,d.cam);
     clampCam();
-    updateUI(); buildSidebar(); drawBg(); drawCity();
-    notify(`📂 ロード完了！`,'gd');
+    updateUI(); buildSidebar(); renderEventLog(); drawBg(); drawCity();
+    notify('📂 ロード完了！','gd');
   }catch(e){notify('❌ ロード失敗','rd');}
 }
+
 function confirmReset(){
-  if(confirm('本当にリセットしますか？')){
+  if(confirm('本当にリセットしますか？全てのデータが失われます。')){
     localStorage.removeItem(SK);
-    state={money:10000,totalEarned:0,population:0,stage:1,grid:{},placedCount:0};
+    state=defaultState();
+    initDistricts();
     cam={x:MAP_W/2-VW/2,y:MAP_H/2-VH/2}; clampCam();
-    selectedType='house'; isDemolish=false;
-    updateUI(); buildSidebar(); drawBg(); drawCity();
+    selectedType='house'; isDemolish=false; isRepairMode=false;
+    lastMonthTime=Date.now();
+    updateUI(); buildSidebar(); renderEventLog(); drawBg(); drawCity();
     notify('🔄 リセットしました','gd');
   }
 }
 
-// ==================== LOOP ====================
+// ==================== GAME LOOP ====================
 function animate(){
   animFrame++;
-  incomeTick();
+
+  // Monthly tick
+  if(!gamePaused){
+    const now=Date.now();
+    if(now-lastMonthTime>=MONTH_MS){
+      lastMonthTime=now;
+      monthlyTick();
+    }
+  }
+
   if(animFrame%3===0) drawBg();
   drawCity();
   if(animFrame%10===0) drawMinimap();
@@ -876,19 +1483,29 @@ function animate(){
 
 // ==================== INIT ====================
 generateTerrain();
+
 window.addEventListener('resize',resize);
 resize();
 
-// center camera on start
 cam.x=MAP_W/2-VW/2; cam.y=MAP_H/2-VH/2; clampCam();
 
-buildSidebar(); updateUI();
-setInterval(saveGame,30000);
-
+// Initialize districts (or load from save)
 const hasSave=localStorage.getItem(SK);
 if(hasSave){
-  setTimeout(()=>{if(confirm('前回のセーブデータがあります。ロードしますか？'))loadGame();},400);
+  setTimeout(()=>{
+    if(confirm('前回のセーブデータがあります。ロードしますか？')){
+      loadGame();
+    } else {
+      initDistricts();
+      buildSidebar(); updateUI();
+    }
+  },400);
+} else {
+  initDistricts();
 }
+
+buildSidebar(); updateUI();
+setInterval(()=>{if(!gamePaused)saveGame();},60000);
 
 animate();
 </script>
