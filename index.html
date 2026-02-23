@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EMPIRE BUILDER - 不動産投資シミュレーター</title>
+<title>EMPIRE BUILDER - 東京不動産投資シミュレーター</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap');
 :root{--bg:#0e1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--gold:#f0b429;--gold2:#d97706;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--purple:#bc8cff;}
@@ -33,7 +33,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:7px
 canvas{display:block;position:absolute;top:0;left:0;}
 #cv-bg{z-index:1;}#cv-city{z-index:2;}#cv-ui{z-index:3;pointer-events:none;}
 #minimap{position:absolute;bottom:10px;right:10px;border:1px solid var(--border);border-radius:6px;overflow:hidden;z-index:10;cursor:pointer;}
-.sidebar{width:210px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+.sidebar{width:220px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
 .sidebar::-webkit-scrollbar{width:4px;}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 .sb-sec{padding:9px;border-bottom:1px solid var(--border);}
@@ -61,7 +61,7 @@ canvas{display:block;position:absolute;top:0;left:0;}
 .tbtn.repair:hover,.tbtn.repair.on{background:rgba(88,166,255,.25);}
 .tbtn.rst{background:rgba(139,148,158,.1);border-color:var(--border);color:var(--text2);}
 .tbtn.rst:hover{background:rgba(139,148,158,.2);color:var(--text);}
-.tooltip{position:absolute;background:var(--surface);border:1px solid var(--gold);padding:7px 11px;border-radius:8px;font-size:0.7rem;pointer-events:none;z-index:100;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:220px;}
+.tooltip{position:absolute;background:var(--surface);border:1px solid var(--gold);padding:7px 11px;border-radius:8px;font-size:0.7rem;pointer-events:none;z-index:100;display:none;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:240px;}
 .tooltip .ttn{font-weight:700;margin-bottom:3px;color:var(--gold);}
 .tooltip .ttr{color:var(--text2);font-size:0.62rem;line-height:1.7;}
 .tooltip .ttr span{color:var(--text);}
@@ -86,7 +86,7 @@ canvas{display:block;position:absolute;top:0;left:0;}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-45px)}}
 .ifloat{position:absolute;font-family:'JetBrains Mono',monospace;font-size:0.72rem;pointer-events:none;z-index:150;animation:floatUp 1.4s ease forwards;font-weight:700;}
 .scroll-hint{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.35);font-size:0.65rem;pointer-events:none;z-index:10;}
-.event-log{position:absolute;bottom:10px;left:10px;z-index:10;display:flex;flex-direction:column;gap:3px;max-width:260px;pointer-events:none;}
+.event-log{position:absolute;bottom:10px;left:10px;z-index:10;display:flex;flex-direction:column;gap:3px;max-width:280px;pointer-events:none;}
 .ev-item{background:rgba(22,27,34,.92);border:1px solid var(--border);border-radius:5px;padding:3px 7px;font-size:0.6rem;backdrop-filter:blur(4px);display:flex;gap:5px;align-items:center;}
 .ev-item.good{border-color:var(--green);color:var(--green);}
 .ev-item.bad{border-color:var(--red);color:var(--red);}
@@ -112,12 +112,12 @@ canvas{display:block;position:absolute;top:0;left:0;}
 </head>
 <body>
 <header>
-  <div class="logo">🏙 EMPIRE BUILDER</div>
+  <div class="logo">🏙 東京 EMPIRE BUILDER</div>
   <div class="stats-bar">
-    <div class="stat-chip"><span class="lbl">💰 現金</span><span class="val" id="s-money">10,000</span></div>
+    <div class="stat-chip"><span class="lbl">💰 現金</span><span class="val" id="s-money">1億円</span></div>
     <div class="stat-chip inc"><span class="lbl">🏠 資産総額</span><span class="val" id="s-assets">0</span></div>
     <div class="stat-chip debt"><span class="lbl">💳 借入残高</span><span class="val" id="s-debt">0</span></div>
-    <div class="stat-chip pop"><span class="lbl">📊 純資産</span><span class="val" id="s-networth">10,000</span></div>
+    <div class="stat-chip pop"><span class="lbl">📊 純資産</span><span class="val" id="s-networth">1億円</span></div>
     <div class="stat-chip stg"><span class="lbl">📅</span><span class="val" id="s-date">1年 1月</span></div>
   </div>
   <div class="hbtns">
@@ -129,7 +129,7 @@ canvas{display:block;position:absolute;top:0;left:0;}
 <div class="stage-bar-wrap">
   <div class="stage-label">
     <span id="milestone-name">初心者投資家</span>
-    <span id="milestone-goal">次: 純資産 ¥50,000</span>
+    <span id="milestone-goal">次: 純資産 5億円</span>
   </div>
   <div class="stage-track"><div class="stage-fill" id="milestone-fill" style="width:0%"></div></div>
 </div>
@@ -146,7 +146,7 @@ canvas{display:block;position:absolute;top:0;left:0;}
       <div class="ttr" id="tt-rent-row">月額賃料: <span id="tt-rent"></span></div>
       <div class="ttr" id="tt-vac-row">空室率: <span id="tt-vac"></span></div>
       <div class="ttr" id="tt-cond-row">状態: <span id="tt-cond"></span></div>
-      <div class="ttr" id="tt-dist-row">地区評価: <span id="tt-dist"></span></div>
+      <div class="ttr" id="tt-dist-row">地区: <span id="tt-dist"></span></div>
     </div>
     <div class="notif" id="notif"></div>
     <div class="event-log" id="event-log"></div>
@@ -171,56 +171,85 @@ canvas{display:block;position:absolute;top:0;left:0;}
 </div>
 
 <script>
-// ==================== BUILDINGS ====================
+// ==================== MONEY FORMAT (万円) ====================
+function fmtMoney(v){
+  v=Math.floor(v);
+  const abs=Math.abs(v), sign=v<0?'-':'';
+  if(abs>=10000){
+    const oku=Math.floor(abs/10000), man=abs%10000;
+    if(man===0) return sign+oku.toLocaleString()+'億円';
+    return sign+oku+'億'+man.toLocaleString()+'万円';
+  }
+  return sign+abs.toLocaleString()+'万円';
+}
+
+// ==================== BUILDINGS (prices in 万円, based on real Tokyo data) ====================
+// 公示地価 2024: 千代田区 ~520万/㎡, 港区 ~340万/㎡, 渋谷区 ~300万/㎡,
+// 世田谷区 ~55万/㎡, 足立区 ~30万/㎡, 練馬区 ~35万/㎡
+// Cap rates: residential 3-5%, commercial 3-6%, hotel 4-6%
 const BUILDINGS = [
-  // Tier 0 (start)
-  {id:'cottage',   name:'小屋',              cost:300,   baseRent:15,   pop:2,   risk:1, tier:0, cat:'residential'},
-  {id:'house',     name:'一般住宅',          cost:800,   baseRent:40,   pop:5,   risk:1, tier:0, cat:'residential'},
-  {id:'road',      name:'道路',              cost:150,   baseRent:0,    pop:0,   risk:0, tier:0, cat:'infra', repBonus:2},
-  {id:'park',      name:'公園',              cost:600,   baseRent:0,    pop:0,   risk:0, tier:0, cat:'infra', repBonus:5},
-  // Tier 1 (¥50K net worth)
-  {id:'apartment', name:'アパート',          cost:2500,  baseRent:125,  pop:20,  risk:2, tier:1, cat:'residential'},
-  {id:'shop',      name:'商店',              cost:1800,  baseRent:90,   pop:3,   risk:2, tier:1, cat:'commercial'},
-  {id:'mountain',  name:'山',                cost:1000,  baseRent:0,    pop:0,   risk:0, tier:1, cat:'infra', repBonus:8},
-  {id:'ocean',     name:'海・ビーチ',        cost:1200,  baseRent:0,    pop:0,   risk:0, tier:1, cat:'infra', repBonus:10},
-  // Tier 2 (¥200K)
-  {id:'clinic',    name:'クリニック',        cost:3000,  baseRent:150,  pop:5,   risk:2, tier:2, cat:'commercial'},
-  {id:'school',    name:'小学校',            cost:4000,  baseRent:0,    pop:30,  risk:1, tier:2, cat:'infra', repBonus:12},
-  {id:'condo',     name:'高級マンション',    cost:10000, baseRent:500,  pop:60,  risk:2, tier:2, cat:'residential'},
-  {id:'office',    name:'オフィスビル',      cost:8000,  baseRent:400,  pop:0,   risk:2, tier:2, cat:'commercial'},
-  // Tier 3 (¥1M)
-  {id:'hotel',     name:'ホテル',            cost:7000,  baseRent:350,  pop:0,   risk:3, tier:3, cat:'commercial'},
-  {id:'stadium',   name:'スタジアム',        cost:12000, baseRent:600,  pop:0,   risk:3, tier:3, cat:'commercial'},
-  // Tier 4 (¥10M)
-  {id:'skyscraper',name:'超巨大ビル',        cost:15000, baseRent:750,  pop:0,   risk:3, tier:4, cat:'commercial'},
-  {id:'mall',      name:'ショッピングモール',cost:18000, baseRent:900,  pop:0,   risk:3, tier:4, cat:'commercial'},
-  {id:'luxury',    name:'超高級マンション',  cost:10000, baseRent:500,  pop:80,  risk:3, tier:4, cat:'residential'},
-  {id:'airport',   name:'国際空港',          cost:25000, baseRent:1250, pop:0,   risk:3, tier:4, cat:'commercial'},
+  // Tier 0 (start) - 手頃な物件
+  {id:'cottage',   name:'小規模戸建',        cost:2500,   baseRent:10,   pop:3,   risk:1, tier:0, cat:'residential'},
+  {id:'house',     name:'一般住宅',          cost:5000,   baseRent:18,   pop:5,   risk:1, tier:0, cat:'residential'},
+  {id:'road',      name:'道路整備',          cost:800,    baseRent:0,    pop:0,   risk:0, tier:0, cat:'infra', repBonus:2},
+  {id:'park',      name:'公園・緑地',        cost:2000,   baseRent:0,    pop:0,   risk:0, tier:0, cat:'infra', repBonus:5},
+  // Tier 1 (5億円 net worth)
+  {id:'apartment', name:'アパート一棟',      cost:12000,  baseRent:50,   pop:20,  risk:2, tier:1, cat:'residential'},
+  {id:'shop',      name:'商店・店舗',        cost:8000,   baseRent:35,   pop:3,   risk:2, tier:1, cat:'commercial'},
+  {id:'mountain',  name:'山林・観光地',      cost:3000,   baseRent:0,    pop:0,   risk:0, tier:1, cat:'infra', repBonus:8},
+  {id:'ocean',     name:'ウォーターフロント',cost:5000,   baseRent:0,    pop:0,   risk:0, tier:1, cat:'infra', repBonus:10},
+  // Tier 2 (20億円)
+  {id:'clinic',    name:'クリニック',        cost:15000,  baseRent:65,   pop:5,   risk:2, tier:2, cat:'commercial'},
+  {id:'school',    name:'学校',              cost:20000,  baseRent:0,    pop:30,  risk:1, tier:2, cat:'infra', repBonus:12},
+  {id:'condo',     name:'分譲マンション',    cost:40000,  baseRent:150,  pop:60,  risk:2, tier:2, cat:'residential'},
+  {id:'office',    name:'オフィスビル',      cost:50000,  baseRent:200,  pop:0,   risk:2, tier:2, cat:'commercial'},
+  // Tier 3 (100億円)
+  {id:'hotel',     name:'ホテル',            cost:80000,  baseRent:350,  pop:0,   risk:3, tier:3, cat:'commercial'},
+  {id:'stadium',   name:'スタジアム',        cost:150000, baseRent:600,  pop:0,   risk:3, tier:3, cat:'commercial'},
+  // Tier 4 (500億円)
+  {id:'skyscraper',name:'超高層ビル',        cost:300000, baseRent:1200, pop:0,   risk:3, tier:4, cat:'commercial'},
+  {id:'mall',      name:'商業施設',          cost:200000, baseRent:800,  pop:0,   risk:3, tier:4, cat:'commercial'},
+  {id:'luxury',    name:'タワーマンション',  cost:100000, baseRent:400,  pop:80,  risk:3, tier:4, cat:'residential'},
+  {id:'airport',   name:'国際空港',          cost:500000, baseRent:2000, pop:0,   risk:3, tier:4, cat:'commercial'},
 ];
 
 const MILESTONES = [
-  {threshold:10000,    title:'初心者投資家'},
-  {threshold:50000,    title:'不動産オーナー'},
-  {threshold:200000,   title:'地域開発者'},
-  {threshold:1000000,  title:'不動産王'},
-  {threshold:10000000, title:'メガ投資家'},
+  {threshold:10000,     title:'初心者投資家'},   // 1億円
+  {threshold:50000,     title:'不動産オーナー'}, // 5億円
+  {threshold:200000,    title:'地域開発者'},     // 20億円
+  {threshold:1000000,   title:'不動産王'},       // 100億円
+  {threshold:5000000,   title:'メガ投資家'},     // 500億円
 ];
 
 const EVENT_TYPES = [
-  {id:'boom',   name:'市場好況',   weight:5, type:'good',    icon:'📈'},
-  {id:'crash',  name:'市場暴落',   weight:3, type:'bad',     icon:'📉'},
-  {id:'quake',  name:'地震',       weight:2, type:'bad',     icon:'🌋'},
-  {id:'fire',   name:'火災',       weight:3, type:'bad',     icon:'🔥'},
-  {id:'exodus', name:'人口流出',   weight:4, type:'bad',     icon:'🚪'},
-  {id:'redev',  name:'再開発',     weight:5, type:'good',    icon:'🏗'},
-  {id:'rate',   name:'金利変動',   weight:8, type:'neutral', icon:'💹'},
-  {id:'vacancy',name:'空室増加',   weight:6, type:'bad',     icon:'🏚'},
+  {id:'boom',   name:'東京市場好況',   weight:5, type:'good',    icon:'📈'},
+  {id:'crash',  name:'不動産市場暴落', weight:3, type:'bad',     icon:'📉'},
+  {id:'quake',  name:'地震',           weight:2, type:'bad',     icon:'🌋'},
+  {id:'fire',   name:'火災',           weight:3, type:'bad',     icon:'🔥'},
+  {id:'exodus', name:'人口流出',       weight:4, type:'bad',     icon:'🚪'},
+  {id:'redev',  name:'再開発事業',     weight:5, type:'good',    icon:'🏗'},
+  {id:'rate',   name:'日銀金利変動',   weight:8, type:'neutral', icon:'💹'},
+  {id:'vacancy',name:'空室増加',       weight:6, type:'bad',     icon:'🏚'},
 ];
 
-const DIST_NAMES = [
-  '港北','中央','都心','港南',
-  '西部','本町','栄','東部',
-  '南西','下町','商業','南東',
+// Real Tokyo district data: base reputation from 公示地価/地価公示 trends
+// trend = monthly reputation drift (reflects 2015-2024 appreciation trends)
+const DIST_DATA = [
+  // Row 0 (north) — x=0-19,y=0-16 | x=20-39 | x=40-59 | x=60-79
+  {name:'練馬・板橋',   baseRep:48, trend:0.06, desc:'住宅街 地価~35万/㎡'},
+  {name:'中野・杉並',   baseRep:58, trend:0.08, desc:'文化・住宅 地価~55万/㎡'},
+  {name:'豊島・文京',   baseRep:65, trend:0.12, desc:'池袋 地価~90万/㎡'},
+  {name:'足立・葛飾',   baseRep:35, trend:0.05, desc:'下町 地価~28万/㎡'},
+  // Row 1 (center) — y=17-33
+  {name:'世田谷',       baseRep:70, trend:0.08, desc:'高級住宅 地価~55万/㎡'},
+  {name:'渋谷・新宿',   baseRep:88, trend:0.18, desc:'都心一等地 地価~300万/㎡'},
+  {name:'千代田・中央',  baseRep:92, trend:0.15, desc:'丸の内・銀座 地価~520万/㎡'},
+  {name:'墨田・江東',   baseRep:52, trend:0.15, desc:'湾岸再開発 地価~45万/㎡'},
+  // Row 2 (south) — y=34-49
+  {name:'調布・府中',   baseRep:42, trend:0.04, desc:'郊外住宅 地価~30万/㎡'},
+  {name:'目黒・大田',   baseRep:65, trend:0.10, desc:'住宅商業 地価~65万/㎡'},
+  {name:'品川・港区',   baseRep:80, trend:0.16, desc:'再開発 地価~280万/㎡'},
+  {name:'台場・湾岸',   baseRep:55, trend:0.12, desc:'ウォーターフロント'},
 ];
 
 const CATS = [
@@ -259,31 +288,24 @@ const MAP_W = MAP_COLS * GRID;
 const MAP_H = MAP_ROWS * GRID;
 const DIST_COLS = 4;
 const DIST_ROWS = 3;
-const DIST_W = MAP_COLS / DIST_COLS; // 20
-const DIST_H = Math.ceil(MAP_ROWS / DIST_ROWS); // 17
+const DIST_W = MAP_COLS / DIST_COLS;
+const DIST_H = Math.ceil(MAP_ROWS / DIST_ROWS);
 const MONTH_MS = 5000;
 
 // ==================== STATE ====================
 function defaultState(){
   return {
-    money: 10000,
-    year: 1,
-    month: 1,
-    loanBalance: 0,
-    loanRate: 0,
+    money: 10000, // 1億円 in 万円 units
+    year: 1, month: 1,
+    loanBalance: 0, loanRate: 0,
     creditScore: 600,
     maxMilestone: 0,
     population: 0,
-    grid: {},
-    properties: {},
-    districts: {},
+    grid: {}, properties: {}, districts: {},
     eventLog: [],
-    marketMod: 0,
-    marketModMonths: 0,
-    vacancyMod: 0,
-    vacancyModMonths: 0,
-    rateMod: 0,
-    bankruptMonths: 0,
+    marketMod: 0, marketModMonths: 0,
+    vacancyMod: 0, vacancyModMonths: 0,
+    rateMod: 0, bankruptMonths: 0,
   };
 }
 
@@ -308,24 +330,99 @@ const cityX = cityC.getContext('2d');
 const uiX   = uiC.getContext('2d');
 const mmX   = mm.getContext('2d');
 
-// ==================== TERRAIN ====================
+// ==================== TOKYO TERRAIN ====================
 const TERRAIN = {};
 const TERRAIN_COLORS = {grass:'#3a6b3a', water:'#1a6fa0', sand:'#c2a46b', hill:'#6b7d6b'};
 const TERRAIN_DARK = {grass:'#2e5430', water:'#154d72', sand:'#a8884a', hill:'#546059'};
 
 function generateTerrain(){
+  // Fill with grass
+  for(let cy=0;cy<MAP_ROWS;cy++)
+    for(let cx=0;cx<MAP_COLS;cx++)
+      TERRAIN[`${cx},${cy}`]='grass';
+
+  // === Tokyo Bay (東京湾) — southeast curved coastline ===
   for(let cy=0;cy<MAP_ROWS;cy++){
-    for(let cx=0;cx<MAP_COLS;cx++){
-      const nx=cx/MAP_COLS, ny=cy/MAP_ROWS;
-      const v=Math.sin(nx*6+1.2)*Math.cos(ny*5+0.7)+Math.sin(nx*12+0.3)*Math.cos(ny*8+1.5)*0.5+Math.sin((nx+ny)*9+2)*0.3;
-      const mv=Math.sin(nx*8+2)*Math.cos(ny*6+1)+Math.sin(nx*3)*0.5;
-      let t='grass';
-      if(v<-0.7) t='water'; else if(v<-0.5) t='sand'; else if(mv>1.2) t='hill';
-      TERRAIN[`${cx},${cy}`]=t;
-    }
+    let bayX;
+    if(cy<8) bayX=80;
+    else if(cy<16) bayX=75-(cy-8)*1.0;
+    else if(cy<24) bayX=67-(cy-16)*0.9;
+    else if(cy<32) bayX=59.8-(cy-24)*0.6;
+    else if(cy<40) bayX=55-(cy-32)*0.4;
+    else bayX=51.8-(cy-40)*0.3;
+    bayX+=Math.sin(cy*0.5)*1.2+Math.sin(cy*1.3)*0.6;
+    for(let cx=Math.max(0,Math.floor(bayX));cx<MAP_COLS;cx++)
+      TERRAIN[`${cx},${cy}`]='water';
   }
-  for(let cx=0;cx<MAP_COLS;cx++){ TERRAIN[`${cx},0`]='water'; TERRAIN[`${cx},${MAP_ROWS-1}`]='water'; }
-  for(let cy=0;cy<MAP_ROWS;cy++){ TERRAIN[`0,${cy}`]='water'; TERRAIN[`${MAP_COLS-1},${cy}`]='water'; }
+
+  // Reclaimed land: お台場 area
+  for(let cy=33;cy<39;cy++)
+    for(let cx=57;cx<63;cx++)
+      if(Math.sqrt((cx-60)**2+(cy-36)**2)<3.2) TERRAIN[`${cx},${cy}`]='grass';
+  // 豊洲 bump
+  for(let cy=28;cy<33;cy++)
+    for(let cx=56;cx<60;cx++)
+      if(cy<31||cx<58) TERRAIN[`${cx},${cy}`]='grass';
+
+  // === 隅田川 (Sumida River) — north to south ===
+  for(let cy=2;cy<45;cy++){
+    const rx=50+Math.sin(cy*0.25)*1.8+Math.sin(cy*0.6)*0.5;
+    const k=`${Math.round(rx)},${cy}`;
+    if(TERRAIN[k]==='water') break; // reached bay
+    TERRAIN[k]='water';
+  }
+
+  // === 荒川 (Arakawa) — wider, parallel east of Sumida ===
+  for(let cy=0;cy<42;cy++){
+    const rx=54+cy*0.06+Math.sin(cy*0.2)*1.5;
+    const r=Math.round(rx);
+    if(r>=MAP_COLS) continue;
+    const k=`${r},${cy}`;
+    if(TERRAIN[k]==='water'&&cy>20) break;
+    TERRAIN[k]='water';
+    if(r+1<MAP_COLS) TERRAIN[`${r+1},${cy}`]='water'; // wider
+  }
+
+  // === 多摩川 (Tama River) — southern border ===
+  for(let cx=0;cx<48;cx++){
+    const ry=47+Math.sin(cx*0.12)*0.8;
+    const r=Math.round(ry);
+    if(r<MAP_ROWS) TERRAIN[`${cx},${r}`]='water';
+    if(r+1<MAP_ROWS) TERRAIN[`${cx},${r+1}`]='water';
+  }
+
+  // === 皇居 (Imperial Palace moat) ===
+  for(let cy=20;cy<25;cy++)
+    for(let cx=41;cx<46;cx++)
+      if(Math.sqrt((cx-43.5)**2+(cy-22.5)**2)<2.2) TERRAIN[`${cx},${cy}`]='water';
+  // Gardens
+  for(let cy=19;cy<26;cy++)
+    for(let cx=40;cx<47;cx++){
+      const d=Math.sqrt((cx-43.5)**2+(cy-22.5)**2);
+      if(d>=2.2&&d<3.5&&TERRAIN[`${cx},${cy}`]==='grass') TERRAIN[`${cx},${cy}`]='hill';
+    }
+
+  // === 武蔵野台地 (Musashino Plateau — western hills) ===
+  for(let cy=0;cy<MAP_ROWS;cy++)
+    for(let cx=0;cx<22;cx++){
+      if(TERRAIN[`${cx},${cy}`]!=='grass') continue;
+      const n=Math.sin(cx*0.4+cy*0.3)*Math.cos(cy*0.35+cx*0.2)+Math.sin(cx*0.7+cy*0.5)*0.4;
+      if((cx<12&&n>0.3)||(cx<18&&n>0.6)||(cx<22&&n>0.8)) TERRAIN[`${cx},${cy}`]='hill';
+    }
+
+  // === Sand along all water edges ===
+  const sandKeys=[];
+  for(let cy=0;cy<MAP_ROWS;cy++)
+    for(let cx=0;cx<MAP_COLS;cx++){
+      if(TERRAIN[`${cx},${cy}`]!=='grass') continue;
+      for(const[dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]){
+        const nx=cx+dx,ny=cy+dy;
+        if(nx>=0&&nx<MAP_COLS&&ny>=0&&ny<MAP_ROWS&&TERRAIN[`${nx},${ny}`]==='water'){
+          sandKeys.push(`${cx},${cy}`); break;
+        }
+      }
+    }
+  sandKeys.forEach(k=>TERRAIN[k]='sand');
 }
 
 // ==================== DISTRICT SYSTEM ====================
@@ -334,124 +431,101 @@ function getDistrictKey(cx,cy){
   const dy=Math.min(Math.floor(cy/DIST_H), DIST_ROWS-1);
   return `${dx},${dy}`;
 }
-
-function getDistrictName(dk){
+function getDistrictIdx(dk){
   const[dx,dy]=dk.split(',').map(Number);
-  return DIST_NAMES[dy*DIST_COLS+dx]||'不明';
+  return dy*DIST_COLS+dx;
 }
+function getDistrictName(dk){ return DIST_DATA[getDistrictIdx(dk)]?.name||'不明'; }
+function getDistrictInfo(dk){ return DIST_DATA[getDistrictIdx(dk)]; }
 
 function initDistricts(){
   state.districts={};
-  for(let dy=0;dy<DIST_ROWS;dy++){
+  for(let dy=0;dy<DIST_ROWS;dy++)
     for(let dx=0;dx<DIST_COLS;dx++){
-      let water=0, hill=0, total=0;
-      for(let cy=dy*DIST_H; cy<Math.min((dy+1)*DIST_H, MAP_ROWS); cy++){
-        for(let cx=dx*DIST_W; cx<Math.min((dx+1)*DIST_W, MAP_COLS); cx++){
-          total++;
-          const t=TERRAIN[`${cx},${cy}`];
-          if(t==='water') water++;
-          if(t==='hill') hill++;
-        }
-      }
-      let baseRep=40;
-      if(water/total>0.05 && water/total<0.4) baseRep+=15;
-      if(hill/total>0.1) baseRep+=8;
-      state.districts[`${dx},${dy}`]={reputation:Math.min(baseRep,80)};
+      const dd=DIST_DATA[dy*DIST_COLS+dx];
+      state.districts[`${dx},${dy}`]={reputation:dd.baseRep};
     }
-  }
+}
+
+function getDistrictPriceMult(cx,cy){
+  const dk=getDistrictKey(cx,cy);
+  const dist=state.districts[dk];
+  if(!dist) return 1;
+  return 0.5+dist.reputation/100; // 0.5x to 1.5x
 }
 
 function updateDistricts(){
-  for(let dy=0;dy<DIST_ROWS;dy++){
+  for(let dy=0;dy<DIST_ROWS;dy++)
     for(let dx=0;dx<DIST_COLS;dx++){
       const dk=`${dx},${dy}`;
       const dist=state.districts[dk];
-      if(!dist) continue;
-      let infraCount=0, buildingCount=0, totalCondition=0;
-      for(let cy=dy*DIST_H; cy<Math.min((dy+1)*DIST_H, MAP_ROWS); cy++){
-        for(let cx=dx*DIST_W; cx<Math.min((dx+1)*DIST_W, MAP_COLS); cx++){
+      const dd=DIST_DATA[dy*DIST_COLS+dx];
+      if(!dist||!dd) continue;
+      let infraCount=0, buildingCount=0, totalCond=0;
+      for(let cy=dy*DIST_H;cy<Math.min((dy+1)*DIST_H,MAP_ROWS);cy++)
+        for(let cx=dx*DIST_W;cx<Math.min((dx+1)*DIST_W,MAP_COLS);cx++){
           const prop=state.properties[`${cx},${cy}`];
           if(prop){
-            buildingCount++;
-            totalCondition+=prop.condition;
+            buildingCount++; totalCond+=prop.condition;
             const b=BUILDINGS.find(x=>x.id===prop.type);
             if(b&&b.cat==='infra') infraCount+=(b.repBonus||1);
           }
         }
-      }
-      let delta=0;
-      if(infraCount>0) delta+=Math.min(infraCount*0.3, 3);
+      let delta=dd.trend; // base historical trend
+      if(infraCount>0) delta+=Math.min(infraCount*0.2,2);
       if(buildingCount>0){
-        const avgCond=totalCondition/buildingCount;
-        if(avgCond<40) delta-=1;
-        if(avgCond>70) delta+=0.5;
+        const avgCond=totalCond/buildingCount;
+        if(avgCond<40) delta-=0.5;
+        if(avgCond>70) delta+=0.3;
       }
-      if(buildingCount>5) delta+=0.3;
-      dist.reputation=Math.max(0, Math.min(100, dist.reputation+delta));
+      dist.reputation=Math.max(5,Math.min(98,dist.reputation+delta));
     }
-  }
 }
 
 // ==================== SIDEBAR ====================
 function buildSidebar(){
   const sb=document.getElementById('sidebar');
   sb.innerHTML='';
-
-  // Portfolio summary
-  const ps=document.createElement('div');
-  ps.className='sb-sec';
+  // Portfolio
+  const ps=document.createElement('div'); ps.className='sb-sec';
   const propKeys=Object.keys(state.properties);
   const rentProps=propKeys.filter(k=>{const b=BUILDINGS.find(x=>x.id===state.properties[k].type);return b&&b.baseRent>0;});
-  const avgVac=rentProps.length>0 ? rentProps.reduce((s,k)=>s+state.properties[k].vacancy,0)/rentProps.length : 0;
-  const avgCond=propKeys.length>0 ? propKeys.reduce((s,k)=>s+state.properties[k].condition,0)/propKeys.length : 0;
+  const avgVac=rentProps.length>0?rentProps.reduce((s,k)=>s+state.properties[k].vacancy,0)/rentProps.length:0;
+  const avgCond=propKeys.length>0?propKeys.reduce((s,k)=>s+state.properties[k].condition,0)/propKeys.length:0;
+  const monthlyInc=calcTotalMonthlyRent();
   ps.innerHTML=`<div class="sb-ttl">📋 ポートフォリオ</div>
     <div class="port-grid">
       <div class="port-item"><span class="port-lbl">物件数</span><span class="port-val">${propKeys.length}</span></div>
       <div class="port-item"><span class="port-lbl">信用スコア</span><span class="port-val">${state.creditScore}</span></div>
-      <div class="port-item"><span class="port-lbl">平均空室率</span><span class="port-val">${avgVac.toFixed(1)}%</span></div>
+      <div class="port-item"><span class="port-lbl">月収</span><span class="port-val" style="color:var(--green)">${fmtMoney(monthlyInc)}</span></div>
       <div class="port-item"><span class="port-lbl">平均状態</span><span class="port-val">${avgCond.toFixed(0)}/100</span></div>
     </div>`;
   sb.appendChild(ps);
 
-  // Building categories
   CATS.forEach(cat=>{
-    const sec=document.createElement('div');
-    sec.className='sb-sec';
+    const sec=document.createElement('div'); sec.className='sb-sec';
     sec.innerHTML=`<div class="sb-ttl">${cat.label}</div>`;
     cat.ids.forEach(id=>{
-      const b=BUILDINGS.find(x=>x.id===id);
-      if(!b)return;
+      const b=BUILDINGS.find(x=>x.id===id); if(!b) return;
       const locked=b.tier>state.maxMilestone;
       const btn=document.createElement('button');
       btn.className='bld-btn'+(locked?' locked':'')+(selectedType===id&&!locked&&!isDemolish&&!isRepairMode?' active':'');
       btn.dataset.id=id;
       const riskStars=b.risk>0?`<span class="br">${'★'.repeat(b.risk)}${'☆'.repeat(3-b.risk)}</span>`:'';
       let incTxt='';
-      if(b.cat==='infra'){
-        incTxt=`<span class="bi">評価+${b.repBonus||0}</span>`;
-      } else if(b.baseRent>0){
-        incTxt=`<span class="bi">¥${b.baseRent}/月</span>`;
-      }
+      if(b.cat==='infra') incTxt=`<span class="bi">評価+${b.repBonus||0}</span>`;
+      else if(b.baseRent>0) incTxt=`<span class="bi">${fmtMoney(b.baseRent)}/月</span>`;
       btn.innerHTML=`<div class="bld-ico">${SVGS[id]||''}</div>
-        <div class="bld-info">
-          <div class="bld-name">${b.name}</div>
-          <div class="bld-meta">
-            <span class="bc">¥${b.cost.toLocaleString()}</span>
-            ${incTxt}
-            ${b.pop>0?`<span class="bp">👥${b.pop}</span>`:''}
-            ${riskStars}
-          </div>
-        </div>
-        ${locked?`<div class="lk-badge">T${b.tier}🔒</div>`:''}`;
+        <div class="bld-info"><div class="bld-name">${b.name}</div>
+          <div class="bld-meta"><span class="bc">${fmtMoney(b.cost)}</span>${incTxt}${b.pop>0?`<span class="bp">👥${b.pop}</span>`:''}${riskStars}</div>
+        </div>${locked?`<div class="lk-badge">T${b.tier}🔒</div>`:''}`;
       if(!locked) btn.onclick=()=>selectBuilding(id);
       sec.appendChild(btn);
     });
     sb.appendChild(sec);
   });
 
-  // Tools
-  const ts=document.createElement('div');
-  ts.className='sb-sec';
+  const ts=document.createElement('div'); ts.className='sb-sec';
   ts.innerHTML=`<div class="sb-ttl">ツール</div><div class="tool-btns">
     <button class="tbtn demo${isDemolish?' on':''}" id="demo-btn" onclick="toggleDemolish()">🗑 取り壊しモード</button>
     <button class="tbtn repair${isRepairMode?' on':''}" id="repair-btn" onclick="toggleRepair()">🔧 修理モード</button>
@@ -467,7 +541,6 @@ function selectBuilding(id){
   const db=document.getElementById('demo-btn'); if(db) db.classList.remove('on');
   const rb=document.getElementById('repair-btn'); if(rb) rb.classList.remove('on');
 }
-
 function toggleDemolish(){
   isDemolish=!isDemolish; isRepairMode=false;
   const db=document.getElementById('demo-btn'); if(db) db.classList.toggle('on',isDemolish);
@@ -475,7 +548,6 @@ function toggleDemolish(){
   if(isDemolish) document.querySelectorAll('.bld-btn').forEach(b=>b.classList.remove('active'));
   notify(isDemolish?'🗑 取り壊しモード':'✏️ 建設モード', isDemolish?'rd':'gd');
 }
-
 function toggleRepair(){
   isRepairMode=!isRepairMode; isDemolish=false;
   const rb=document.getElementById('repair-btn'); if(rb) rb.classList.toggle('on',isRepairMode);
@@ -497,7 +569,7 @@ function clampCam(){
   cam.y=Math.max(0,Math.min(cam.y, MAP_H-VH));
 }
 
-// ==================== BACKGROUND DRAWING ====================
+// ==================== BACKGROUND ====================
 function drawBg(){
   bgX.clearRect(0,0,VW,VH);
   const skyH=Math.max(0,-cam.y);
@@ -507,9 +579,9 @@ function drawBg(){
     bgX.fillStyle=sg; bgX.fillRect(0,0,VW,skyH);
   }
   const c0=Math.floor(cam.x/GRID), r0=Math.floor(cam.y/GRID);
-  const c1=Math.min(MAP_COLS-1, c0+Math.ceil(VW/GRID)+1);
-  const r1=Math.min(MAP_ROWS-1, r0+Math.ceil(VH/GRID)+1);
-  for(let r=r0;r<=r1;r++){
+  const c1=Math.min(MAP_COLS-1,c0+Math.ceil(VW/GRID)+1);
+  const r1=Math.min(MAP_ROWS-1,r0+Math.ceil(VH/GRID)+1);
+  for(let r=r0;r<=r1;r++)
     for(let c=c0;c<=c1;c++){
       const t=TERRAIN[`${c},${r}`]||'grass';
       const sx=c*GRID-cam.x, sy=r*GRID-cam.y;
@@ -522,306 +594,195 @@ function drawBg(){
       }
       bgX.strokeStyle='rgba(0,0,0,0.08)'; bgX.lineWidth=0.5; bgX.strokeRect(sx,sy,GRID,GRID);
     }
-  }
-  // District boundary lines
+  // District boundaries
   bgX.strokeStyle='rgba(255,255,255,0.12)'; bgX.lineWidth=1; bgX.setLineDash([6,4]);
   for(let dx=1;dx<DIST_COLS;dx++){
     const sx=dx*DIST_W*GRID-cam.x;
-    if(sx>0&&sx<VW){ bgX.beginPath(); bgX.moveTo(sx,0); bgX.lineTo(sx,VH); bgX.stroke(); }
+    if(sx>0&&sx<VW){bgX.beginPath();bgX.moveTo(sx,0);bgX.lineTo(sx,VH);bgX.stroke();}
   }
   for(let dy=1;dy<DIST_ROWS;dy++){
     const sy=dy*DIST_H*GRID-cam.y;
-    if(sy>0&&sy<VH){ bgX.beginPath(); bgX.moveTo(0,sy); bgX.lineTo(VW,sy); bgX.stroke(); }
+    if(sy>0&&sy<VH){bgX.beginPath();bgX.moveTo(0,sy);bgX.lineTo(VW,sy);bgX.stroke();}
   }
   bgX.setLineDash([]);
 }
 
 // ==================== DRAW BUILDINGS ====================
 function drawBuilding(ctx,id,gx,gy,cx,cy){
-  const t=animFrame/60;
-  ctx.save();
-  const G=GRID;
+  const t=animFrame/60; ctx.save(); const G=GRID;
   switch(id){
     case 'cottage':{
-      ctx.fillStyle='#5c4033'; ctx.fillRect(gx+4,gy+G-14,G-8,14);
-      ctx.fillStyle='#8d6e63'; ctx.fillRect(gx+6,gy+G-20,G-12,10);
-      ctx.fillStyle='#4e342e';
+      ctx.fillStyle='#5c4033';ctx.fillRect(gx+4,gy+G-14,G-8,14);ctx.fillStyle='#8d6e63';ctx.fillRect(gx+6,gy+G-20,G-12,10);ctx.fillStyle='#4e342e';
       ctx.beginPath();ctx.moveTo(gx+G/2,gy+G-26);ctx.lineTo(gx+4,gy+G-18);ctx.lineTo(gx+G-4,gy+G-18);ctx.closePath();ctx.fill();
-      ctx.fillStyle=`rgba(255,220,120,${.5+Math.sin(t*2+cx)*.4})`;
-      ctx.fillRect(gx+8,gy+G-19,6,5);
-      break;}
+      ctx.fillStyle=`rgba(255,220,120,${.5+Math.sin(t*2+cx)*.4})`;ctx.fillRect(gx+8,gy+G-19,6,5);break;}
     case 'house':{
-      ctx.fillStyle='#bf8a60'; ctx.fillRect(gx+3,gy+14,G-6,G-15);
-      ctx.fillStyle='#795548';
+      ctx.fillStyle='#bf8a60';ctx.fillRect(gx+3,gy+14,G-6,G-15);ctx.fillStyle='#795548';
       ctx.beginPath();ctx.moveTo(gx+G/2,gy+4);ctx.lineTo(gx+1,gy+16);ctx.lineTo(gx+G-1,gy+16);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#4e342e'; ctx.fillRect(gx+G/2-4,gy+G-12,8,12);
-      ctx.fillStyle=`rgba(135,206,235,${.7+Math.sin(t+cx*.5)*.2})`;
-      ctx.fillRect(gx+5,gy+18,7,6); ctx.fillRect(gx+G-12,gy+18,7,6);
-      break;}
+      ctx.fillStyle='#4e342e';ctx.fillRect(gx+G/2-4,gy+G-12,8,12);
+      ctx.fillStyle=`rgba(135,206,235,${.7+Math.sin(t+cx*.5)*.2})`;ctx.fillRect(gx+5,gy+18,7,6);ctx.fillRect(gx+G-12,gy+18,7,6);break;}
     case 'road':{
-      ctx.fillStyle='#1a1a1a'; ctx.fillRect(gx,gy,G,G);
-      ctx.fillStyle='#252525'; ctx.fillRect(gx+1,gy+1,G-2,G-2);
-      const cp=(animFrame*0.5+cx*7)%(G+10)-5;
-      ctx.fillStyle='#ef5350'; ctx.fillRect(gx+cp,gy+G/2-4,8,4);
-      const cp2=(animFrame*0.3+cy*11+20)%(G+10)-5;
-      ctx.fillStyle='#42a5f5'; ctx.fillRect(gx+G/2-4,gy+G-cp2-4,4,6);
-      ctx.strokeStyle='#F0B429'; ctx.setLineDash([5,4]); ctx.lineWidth=1;
+      ctx.fillStyle='#1a1a1a';ctx.fillRect(gx,gy,G,G);ctx.fillStyle='#252525';ctx.fillRect(gx+1,gy+1,G-2,G-2);
+      const cp=(animFrame*0.5+cx*7)%(G+10)-5;ctx.fillStyle='#ef5350';ctx.fillRect(gx+cp,gy+G/2-4,8,4);
+      const cp2=(animFrame*0.3+cy*11+20)%(G+10)-5;ctx.fillStyle='#42a5f5';ctx.fillRect(gx+G/2-4,gy+G-cp2-4,4,6);
+      ctx.strokeStyle='#F0B429';ctx.setLineDash([5,4]);ctx.lineWidth=1;
       ctx.beginPath();ctx.moveTo(gx,gy+G/2);ctx.lineTo(gx+G,gy+G/2);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(gx+G/2,gy);ctx.lineTo(gx+G/2,gy+G);ctx.stroke();
-      ctx.setLineDash([]);
-      break;}
+      ctx.beginPath();ctx.moveTo(gx+G/2,gy);ctx.lineTo(gx+G/2,gy+G);ctx.stroke();ctx.setLineDash([]);break;}
     case 'park':{
-      ctx.fillStyle='#2e7d32'; ctx.fillRect(gx,gy,G,G);
-      ctx.fillStyle='#9e8a6a'; ctx.fillRect(gx+G/2-3,gy,6,G); ctx.fillRect(gx,gy+G/2-3,G,6);
-      const pp=(animFrame*0.4+cx*5)%(G-8);
-      ctx.fillStyle='#fff'; ctx.beginPath();ctx.arc(gx+4+pp,gy+G/2-1,2,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#2e7d32';ctx.fillRect(gx,gy,G,G);ctx.fillStyle='#9e8a6a';ctx.fillRect(gx+G/2-3,gy,6,G);ctx.fillRect(gx,gy+G/2-3,G,6);
+      const pp=(animFrame*0.4+cx*5)%(G-8);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(gx+4+pp,gy+G/2-1,2,0,Math.PI*2);ctx.fill();
       [[10,G-18,8],[G-10,G-18,8],[G/2,10,10]].forEach(([tx,ty,r])=>{
-        ctx.fillStyle='#1b5e20'; ctx.beginPath();ctx.arc(gx+tx,gy+ty,r+2,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle='#4caf50'; ctx.beginPath();ctx.arc(gx+tx,gy+ty,r-2,0,Math.PI*2);ctx.fill();
-      });
-      break;}
+        ctx.fillStyle='#1b5e20';ctx.beginPath();ctx.arc(gx+tx,gy+ty,r+2,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#4caf50';ctx.beginPath();ctx.arc(gx+tx,gy+ty,r-2,0,Math.PI*2);ctx.fill();
+      });break;}
     case 'mountain':{
-      ctx.fillStyle='#546e7a'; ctx.fillRect(gx,gy,G,G);
-      ctx.fillStyle='#78909c';
+      ctx.fillStyle='#546e7a';ctx.fillRect(gx,gy,G,G);ctx.fillStyle='#78909c';
       ctx.beginPath();ctx.moveTo(gx+G/2,gy+2);ctx.lineTo(gx+2,gy+G-2);ctx.lineTo(gx+G-2,gy+G-2);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#607d8b';
-      ctx.beginPath();ctx.moveTo(gx+G*0.7,gy+8);ctx.lineTo(gx+G*0.4,gy+G-2);ctx.lineTo(gx+G-2,gy+G-2);ctx.closePath();ctx.fill();
-      ctx.fillStyle='white';
-      ctx.beginPath();ctx.moveTo(gx+G/2,gy+2);ctx.lineTo(gx+G/2-6,gy+12);ctx.lineTo(gx+G/2+6,gy+12);ctx.closePath();ctx.fill();
-      const ca=.5+Math.sin(t*.5+cx)*.3;
-      ctx.fillStyle=`rgba(255,255,255,${ca})`;
-      ctx.beginPath();ctx.ellipse(gx+G/2+4,gy+6,5,3,0,0,Math.PI*2);ctx.fill();
-      break;}
+      ctx.fillStyle='#607d8b';ctx.beginPath();ctx.moveTo(gx+G*0.7,gy+8);ctx.lineTo(gx+G*0.4,gy+G-2);ctx.lineTo(gx+G-2,gy+G-2);ctx.closePath();ctx.fill();
+      ctx.fillStyle='white';ctx.beginPath();ctx.moveTo(gx+G/2,gy+2);ctx.lineTo(gx+G/2-6,gy+12);ctx.lineTo(gx+G/2+6,gy+12);ctx.closePath();ctx.fill();
+      ctx.fillStyle=`rgba(255,255,255,${.5+Math.sin(t*.5+cx)*.3})`;ctx.beginPath();ctx.ellipse(gx+G/2+4,gy+6,5,3,0,0,Math.PI*2);ctx.fill();break;}
     case 'ocean':{
-      ctx.fillStyle='#f5deb3'; ctx.fillRect(gx,gy,G,G/3+4);
-      const wg=ctx.createLinearGradient(0,gy+G/3,0,gy+G);
-      wg.addColorStop(0,'#039be5'); wg.addColorStop(1,'#01579b');
-      ctx.fillStyle=wg; ctx.fillRect(gx,gy+G/3,G,G-G/3);
-      const wt=(animFrame/30+cx*.5)%1;
-      ctx.strokeStyle=`rgba(255,255,255,${.3+wt*.4})`; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+      ctx.fillStyle='#f5deb3';ctx.fillRect(gx,gy,G,G/3+4);
+      const wg=ctx.createLinearGradient(0,gy+G/3,0,gy+G);wg.addColorStop(0,'#039be5');wg.addColorStop(1,'#01579b');
+      ctx.fillStyle=wg;ctx.fillRect(gx,gy+G/3,G,G-G/3);
+      const wt=(animFrame/30+cx*.5)%1;ctx.strokeStyle=`rgba(255,255,255,${.3+wt*.4})`;ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
       ctx.beginPath();ctx.moveTo(gx,gy+G/2+wt*6);ctx.lineTo(gx+G,gy+G/2+wt*6);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(gx,gy+G*0.7+(1-wt)*5);ctx.lineTo(gx+G,gy+G*0.7+(1-wt)*5);ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle=`rgba(255,220,80,${.1+Math.sin(t+cx)*.05})`;
-      ctx.fillRect(gx+G/2-3,gy+G/3,6,G-G/3);
-      ctx.fillStyle='#e53935'; ctx.beginPath();ctx.ellipse(gx+8,gy+8,7,4,-.3,0,Math.PI);ctx.fill();
-      ctx.strokeStyle='#795548'; ctx.lineWidth=1; ctx.setLineDash([]);
-      ctx.beginPath();ctx.moveTo(gx+8,gy+8);ctx.lineTo(gx+10,gy+18);ctx.stroke();
-      break;}
+      ctx.beginPath();ctx.moveTo(gx,gy+G*0.7+(1-wt)*5);ctx.lineTo(gx+G,gy+G*0.7+(1-wt)*5);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=`rgba(255,220,80,${.1+Math.sin(t+cx)*.05})`;ctx.fillRect(gx+G/2-3,gy+G/3,6,G-G/3);
+      ctx.fillStyle='#e53935';ctx.beginPath();ctx.ellipse(gx+8,gy+8,7,4,-.3,0,Math.PI);ctx.fill();
+      ctx.strokeStyle='#795548';ctx.lineWidth=1;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(gx+8,gy+8);ctx.lineTo(gx+10,gy+18);ctx.stroke();break;}
     case 'apartment':{
-      ctx.fillStyle='#546e7a'; ctx.fillRect(gx+3,gy+2,G-6,G-3);
-      ctx.fillStyle='#37474f'; ctx.fillRect(gx+3,gy+2,G-6,4);
+      ctx.fillStyle='#546e7a';ctx.fillRect(gx+3,gy+2,G-6,G-3);ctx.fillStyle='#37474f';ctx.fillRect(gx+3,gy+2,G-6,4);
       for(let row=0;row<3;row++) for(let col=0;col<2;col++){
-        const lit=Math.sin(t+cx*1.3+cy*.7+row*2+col*4)>0;
-        ctx.fillStyle=lit?'#ffe082':'#1a237e';
-        ctx.fillRect(gx+6+col*14,gy+8+row*10,8,7);
-      }
-      ctx.fillStyle='#263238'; ctx.fillRect(gx+G/2-4,gy+G-10,8,10);
-      break;}
+        ctx.fillStyle=Math.sin(t+cx*1.3+cy*.7+row*2+col*4)>0?'#ffe082':'#1a237e';
+        ctx.fillRect(gx+6+col*14,gy+8+row*10,8,7);}
+      ctx.fillStyle='#263238';ctx.fillRect(gx+G/2-4,gy+G-10,8,10);break;}
     case 'shop':{
-      ctx.fillStyle='#e65100'; ctx.fillRect(gx+2,gy+G-24,G-4,24);
-      ctx.fillStyle='#f57c00'; ctx.fillRect(gx+2,gy+G-27,G-4,4);
-      ctx.fillStyle='#ffe082'; ctx.fillRect(gx+5,gy+G-22,G-10,7);
-      ctx.fillStyle=`rgba(200,230,255,${.6+Math.sin(t*1.5)*.2})`; ctx.fillRect(gx+5,gy+G-14,G-10,8);
-      break;}
+      ctx.fillStyle='#e65100';ctx.fillRect(gx+2,gy+G-24,G-4,24);ctx.fillStyle='#f57c00';ctx.fillRect(gx+2,gy+G-27,G-4,4);
+      ctx.fillStyle='#ffe082';ctx.fillRect(gx+5,gy+G-22,G-10,7);
+      ctx.fillStyle=`rgba(200,230,255,${.6+Math.sin(t*1.5)*.2})`;ctx.fillRect(gx+5,gy+G-14,G-10,8);break;}
     case 'clinic':{
-      ctx.fillStyle='#f5f5f5'; ctx.fillRect(gx+3,gy+8,G-6,G-9);
-      ctx.fillStyle='#c62828'; ctx.fillRect(gx+3,gy+8,G-6,7);
-      ctx.fillStyle='white'; ctx.fillRect(gx+G/2-1.5,gy+9,3,5); ctx.fillRect(gx+G/2-4,gy+10.5,8,2);
-      ctx.fillStyle='#90caf9'; ctx.fillRect(gx+5,gy+18,7,6); ctx.fillRect(gx+G-12,gy+18,7,6);
-      break;}
+      ctx.fillStyle='#f5f5f5';ctx.fillRect(gx+3,gy+8,G-6,G-9);ctx.fillStyle='#c62828';ctx.fillRect(gx+3,gy+8,G-6,7);
+      ctx.fillStyle='white';ctx.fillRect(gx+G/2-1.5,gy+9,3,5);ctx.fillRect(gx+G/2-4,gy+10.5,8,2);
+      ctx.fillStyle='#90caf9';ctx.fillRect(gx+5,gy+18,7,6);ctx.fillRect(gx+G-12,gy+18,7,6);break;}
     case 'school':{
-      ctx.fillStyle='#fff8e1'; ctx.fillRect(gx+2,gy+12,G-4,G-13);
-      ctx.fillStyle='#f9a825'; ctx.fillRect(gx+2,gy+8,G-4,6);
-      ctx.fillStyle='#e65100';
-      ctx.beginPath();ctx.moveTo(gx+G/2,gy+2);ctx.lineTo(gx+2,gy+10);ctx.lineTo(gx+G-2,gy+10);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#90caf9'; ctx.fillRect(gx+5,gy+16,8,7); ctx.fillRect(gx+G-13,gy+16,8,7);
-      break;}
+      ctx.fillStyle='#fff8e1';ctx.fillRect(gx+2,gy+12,G-4,G-13);ctx.fillStyle='#f9a825';ctx.fillRect(gx+2,gy+8,G-4,6);
+      ctx.fillStyle='#e65100';ctx.beginPath();ctx.moveTo(gx+G/2,gy+2);ctx.lineTo(gx+2,gy+10);ctx.lineTo(gx+G-2,gy+10);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#90caf9';ctx.fillRect(gx+5,gy+16,8,7);ctx.fillRect(gx+G-13,gy+16,8,7);break;}
     case 'condo':{
-      ctx.fillStyle='#263238'; ctx.fillRect(gx+G/2-8,gy+1,16,G-2);
-      ctx.fillStyle='#37474f'; ctx.fillRect(gx+2,gy+G-20,G-4,20);
+      ctx.fillStyle='#263238';ctx.fillRect(gx+G/2-8,gy+1,16,G-2);ctx.fillStyle='#37474f';ctx.fillRect(gx+2,gy+G-20,G-4,20);
       for(let row=0;row<5;row++) for(let col=0;col<2;col++){
-        const lit=Math.sin(t*.8+cx*2+cy+row*1.7+col*3.2)>-.1;
-        ctx.fillStyle=lit?'#ffd54f':'#0d47a1';
-        ctx.fillRect(gx+G/2-7+col*8,gy+3+row*8,5,5);
-      }
-      for(let col=0;col<3;col++){
-        ctx.fillStyle=Math.sin(t+col*2)>0?'#ffcc02':'#1565c0';
-        ctx.fillRect(gx+4+col*12,gy+G-16,8,8);
-      }
-      ctx.fillStyle='#00bcd4'; ctx.fillRect(gx+G/2-8,gy,16,2);
-      break;}
+        ctx.fillStyle=Math.sin(t*.8+cx*2+cy+row*1.7+col*3.2)>-.1?'#ffd54f':'#0d47a1';
+        ctx.fillRect(gx+G/2-7+col*8,gy+3+row*8,5,5);}
+      for(let col=0;col<3;col++){ctx.fillStyle=Math.sin(t+col*2)>0?'#ffcc02':'#1565c0';ctx.fillRect(gx+4+col*12,gy+G-16,8,8);}
+      ctx.fillStyle='#00bcd4';ctx.fillRect(gx+G/2-8,gy,16,2);break;}
     case 'office':{
-      ctx.fillStyle='#0d47a1'; ctx.fillRect(gx+4,gy+1,G-8,G-2);
-      for(let row=0;row<6;row++){
-        ctx.fillStyle=`rgba(144,202,249,${.3+Math.sin(t*.3+row*.5)*.15})`;
-        ctx.fillRect(gx+6,gy+3+row*6,G-12,4);
-      }
-      ctx.strokeStyle='#42a5f5'; ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.moveTo(gx+G/2,gy-5);ctx.lineTo(gx+G/2,gy+2);ctx.stroke();
-      ctx.fillStyle='#42a5f5'; ctx.beginPath();ctx.arc(gx+G/2,gy-5,2,0,Math.PI*2);ctx.fill();
-      break;}
+      ctx.fillStyle='#0d47a1';ctx.fillRect(gx+4,gy+1,G-8,G-2);
+      for(let row=0;row<6;row++){ctx.fillStyle=`rgba(144,202,249,${.3+Math.sin(t*.3+row*.5)*.15})`;ctx.fillRect(gx+6,gy+3+row*6,G-12,4);}
+      ctx.strokeStyle='#42a5f5';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(gx+G/2,gy-5);ctx.lineTo(gx+G/2,gy+2);ctx.stroke();
+      ctx.fillStyle='#42a5f5';ctx.beginPath();ctx.arc(gx+G/2,gy-5,2,0,Math.PI*2);ctx.fill();break;}
     case 'hotel':{
-      ctx.fillStyle='#4a148c'; ctx.fillRect(gx+3,gy+4,G-6,G-5);
-      ctx.fillStyle='#38006b';
+      ctx.fillStyle='#4a148c';ctx.fillRect(gx+3,gy+4,G-6,G-5);ctx.fillStyle='#38006b';
       ctx.beginPath();ctx.moveTo(gx+G/2,gy);ctx.lineTo(gx+3,gy+6);ctx.lineTo(gx+G-3,gy+6);ctx.closePath();ctx.fill();
       for(let row=0;row<4;row++) for(let col=0;col<3;col++){
-        ctx.fillStyle=Math.sin(t+row*1.3+col*2.1+cx)>0?'#ffe082':'#1a0033';
-        ctx.fillRect(gx+5+col*11,gy+10+row*8,7,5);
-      }
-      break;}
+        ctx.fillStyle=Math.sin(t+row*1.3+col*2.1+cx)>0?'#ffe082':'#1a0033';ctx.fillRect(gx+5+col*11,gy+10+row*8,7,5);}break;}
     case 'stadium':{
-      ctx.fillStyle='#1c1c1c';
-      ctx.beginPath();ctx.ellipse(gx+G/2,gy+G/2,G/2-2,G/3,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#2e7d32';
-      ctx.beginPath();ctx.ellipse(gx+G/2,gy+G/2,G/2-7,G/3-4,0,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle='#33691e'; ctx.lineWidth=1;
-      ctx.beginPath();ctx.ellipse(gx+G/2,gy+G/2,G/2-12,G/3-8,0,0,Math.PI*2);ctx.stroke();
+      ctx.fillStyle='#1c1c1c';ctx.beginPath();ctx.ellipse(gx+G/2,gy+G/2,G/2-2,G/3,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#2e7d32';ctx.beginPath();ctx.ellipse(gx+G/2,gy+G/2,G/2-7,G/3-4,0,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#33691e';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(gx+G/2,gy+G/2,G/2-12,G/3-8,0,0,Math.PI*2);ctx.stroke();
       [[4,4],[G-4,4],[4,G-4],[G-4,G-4]].forEach(([lx,ly])=>{
-        ctx.fillStyle=Math.sin(t*2+lx*.1)>.5?'#fff176':'#f57f17';
-        ctx.beginPath();ctx.arc(gx+lx,gy+ly,2,0,Math.PI*2);ctx.fill();
-      });
-      break;}
+        ctx.fillStyle=Math.sin(t*2+lx*.1)>.5?'#fff176':'#f57f17';ctx.beginPath();ctx.arc(gx+lx,gy+ly,2,0,Math.PI*2);ctx.fill();});break;}
     case 'skyscraper':{
-      ctx.fillStyle='#1a237e'; ctx.fillRect(gx+1,gy+G-18,G-2,18);
-      ctx.fillStyle='#0d1b4a'; ctx.fillRect(gx+6,gy+2,G-12,G-18);
-      ctx.fillStyle='#1565c0'; ctx.fillRect(gx+G/2-4,gy-4,8,G/3);
+      ctx.fillStyle='#1a237e';ctx.fillRect(gx+1,gy+G-18,G-2,18);ctx.fillStyle='#0d1b4a';ctx.fillRect(gx+6,gy+2,G-12,G-18);
+      ctx.fillStyle='#1565c0';ctx.fillRect(gx+G/2-4,gy-4,8,G/3);
       for(let row=0;row<7;row++) for(let col=0;col<2;col++){
-        ctx.fillStyle=Math.sin(t*.6+cx*1.5+cy+row*1.2+col*2.8)>0?'#bbdefb':'#0a1433';
-        ctx.fillRect(gx+8+col*10,gy+4+row*5,7,3);
-      }
-      ctx.fillStyle=Math.sin(t*4)>0?'#ef5350':'#b71c1c';
-      ctx.beginPath();ctx.arc(gx+G/2,gy-4,2.5,0,Math.PI*2);ctx.fill();
-      break;}
+        ctx.fillStyle=Math.sin(t*.6+cx*1.5+cy+row*1.2+col*2.8)>0?'#bbdefb':'#0a1433';ctx.fillRect(gx+8+col*10,gy+4+row*5,7,3);}
+      ctx.fillStyle=Math.sin(t*4)>0?'#ef5350':'#b71c1c';ctx.beginPath();ctx.arc(gx+G/2,gy-4,2.5,0,Math.PI*2);ctx.fill();break;}
     case 'mall':{
-      ctx.fillStyle='#37474f'; ctx.fillRect(gx,gy+G-22,G,22);
-      ctx.fillStyle='#546e7a'; ctx.fillRect(gx+8,gy+G-36,G-16,14);
-      ctx.fillStyle=`rgba(144,202,249,${.3+Math.sin(t*.3)*.15})`; ctx.fillRect(gx+10,gy+G-34,G-20,10);
-      ['#ef9a9a','#a5d6a7','#90caf9','#fff59d'].forEach((c,i)=>{
-        if(i*10<G-4){ ctx.fillStyle=c; ctx.fillRect(gx+2+i*10,gy+G-18,8,10); }
-      });
-      break;}
+      ctx.fillStyle='#37474f';ctx.fillRect(gx,gy+G-22,G,22);ctx.fillStyle='#546e7a';ctx.fillRect(gx+8,gy+G-36,G-16,14);
+      ctx.fillStyle=`rgba(144,202,249,${.3+Math.sin(t*.3)*.15})`;ctx.fillRect(gx+10,gy+G-34,G-20,10);
+      ['#ef9a9a','#a5d6a7','#90caf9','#fff59d'].forEach((c,i)=>{if(i*10<G-4){ctx.fillStyle=c;ctx.fillRect(gx+2+i*10,gy+G-18,8,10);}});break;}
     case 'luxury':{
-      ctx.fillStyle='#0a0a0a'; ctx.fillRect(gx+G/2-8,gy,16,G);
-      ctx.fillStyle='#111'; ctx.fillRect(gx+1,gy+G-20,G-2,20);
-      ctx.strokeStyle='#d4af37'; ctx.lineWidth=.5;
-      ctx.strokeRect(gx+G/2-8,gy,16,G); ctx.strokeRect(gx+1,gy+G-20,G-2,20);
+      ctx.fillStyle='#0a0a0a';ctx.fillRect(gx+G/2-8,gy,16,G);ctx.fillStyle='#111';ctx.fillRect(gx+1,gy+G-20,G-2,20);
+      ctx.strokeStyle='#d4af37';ctx.lineWidth=.5;ctx.strokeRect(gx+G/2-8,gy,16,G);ctx.strokeRect(gx+1,gy+G-20,G-2,20);
       for(let row=0;row<6;row++) for(let col=0;col<2;col++){
-        ctx.fillStyle=Math.sin(t*.5+cx*2+row*1.5+col*3)>0?'#d4af37':'#1a1500';
-        ctx.fillRect(gx+G/2-7+col*8,gy+2+row*7,5,4);
-      }
-      ctx.fillStyle='#d4af37'; ctx.fillRect(gx+G/2-1,gy-6,2,6);
-      ctx.beginPath();ctx.moveTo(gx+G/2,gy-10);ctx.lineTo(gx+G/2-3,gy-6);ctx.lineTo(gx+G/2+3,gy-6);ctx.closePath();ctx.fill();
-      break;}
+        ctx.fillStyle=Math.sin(t*.5+cx*2+row*1.5+col*3)>0?'#d4af37':'#1a1500';ctx.fillRect(gx+G/2-7+col*8,gy+2+row*7,5,4);}
+      ctx.fillStyle='#d4af37';ctx.fillRect(gx+G/2-1,gy-6,2,6);
+      ctx.beginPath();ctx.moveTo(gx+G/2,gy-10);ctx.lineTo(gx+G/2-3,gy-6);ctx.lineTo(gx+G/2+3,gy-6);ctx.closePath();ctx.fill();break;}
     case 'airport':{
-      ctx.fillStyle='#212121'; ctx.fillRect(gx,gy+G-16,G,16);
-      ctx.fillStyle='#37474f'; ctx.fillRect(gx+4,gy+G-30,G-8,16);
-      ctx.fillStyle='#455a64';
-      ctx.beginPath();ctx.moveTo(gx+4,gy+G-30);ctx.quadraticCurveTo(gx+G/2,gy+G-38,gx+G-4,gy+G-30);
+      ctx.fillStyle='#212121';ctx.fillRect(gx,gy+G-16,G,16);ctx.fillStyle='#37474f';ctx.fillRect(gx+4,gy+G-30,G-8,16);
+      ctx.fillStyle='#455a64';ctx.beginPath();ctx.moveTo(gx+4,gy+G-30);ctx.quadraticCurveTo(gx+G/2,gy+G-38,gx+G-4,gy+G-30);
       ctx.lineTo(gx+G-4,gy+G-28);ctx.quadraticCurveTo(gx+G/2,gy+G-36,gx+4,gy+G-28);ctx.closePath();ctx.fill();
-      for(let i=0;i<5;i++){
-        ctx.fillStyle=`rgba(144,202,249,${.5+Math.sin(t+i)*.3})`;
-        ctx.fillRect(gx+5+i*8,gy+G-27,5,8);
-      }
-      const px=(animFrame*1.2+cx*13)%(G+20)-10;
-      ctx.fillStyle='#eceff1'; ctx.fillRect(gx+px,gy+4,10,4);
-      ctx.fillStyle='#b0bec5';
-      ctx.beginPath();ctx.moveTo(gx+px+4,gy+4);ctx.lineTo(gx+px+2,gy+1);ctx.lineTo(gx+px+8,gy+4);ctx.closePath();ctx.fill();
-      break;}
+      for(let i=0;i<5;i++){ctx.fillStyle=`rgba(144,202,249,${.5+Math.sin(t+i)*.3})`;ctx.fillRect(gx+5+i*8,gy+G-27,5,8);}
+      const px=(animFrame*1.2+cx*13)%(G+20)-10;ctx.fillStyle='#eceff1';ctx.fillRect(gx+px,gy+4,10,4);
+      ctx.fillStyle='#b0bec5';ctx.beginPath();ctx.moveTo(gx+px+4,gy+4);ctx.lineTo(gx+px+2,gy+1);ctx.lineTo(gx+px+8,gy+4);ctx.closePath();ctx.fill();break;}
   }
   ctx.restore();
 }
 
 function drawCity(){
   cityX.clearRect(0,0,VW,VH);
-  const c0=Math.floor(cam.x/GRID)-1, r0=Math.floor(cam.y/GRID)-1;
-  const c1=Math.min(MAP_COLS-1, c0+Math.ceil(VW/GRID)+2);
-  const r1=Math.min(MAP_ROWS-1, r0+Math.ceil(VH/GRID)+2);
-  for(let r=r0;r<=r1;r++){
+  const c0=Math.floor(cam.x/GRID)-1,r0=Math.floor(cam.y/GRID)-1;
+  const c1=Math.min(MAP_COLS-1,c0+Math.ceil(VW/GRID)+2);
+  const r1=Math.min(MAP_ROWS-1,r0+Math.ceil(VH/GRID)+2);
+  for(let r=r0;r<=r1;r++)
     for(let c=c0;c<=c1;c++){
       const key=`${c},${r}`;
       if(state.grid[key]){
-        const sx=c*GRID-cam.x, sy=r*GRID-cam.y;
-        drawBuilding(cityX, state.grid[key], sx, sy, c, r);
-        // Condition indicator dot
+        const sx=c*GRID-cam.x,sy=r*GRID-cam.y;
+        drawBuilding(cityX,state.grid[key],sx,sy,c,r);
         const prop=state.properties[key];
         if(prop){
           const cond=prop.condition;
           const color=cond>=70?'#3fb950':cond>=40?'#f0b429':cond>=20?'#f85149':'#666';
-          cityX.fillStyle=color;
-          cityX.beginPath(); cityX.arc(sx+GRID-5, sy+5, 3, 0, Math.PI*2); cityX.fill();
-          cityX.strokeStyle='rgba(0,0,0,0.5)'; cityX.lineWidth=0.5;
-          cityX.beginPath(); cityX.arc(sx+GRID-5, sy+5, 3, 0, Math.PI*2); cityX.stroke();
+          cityX.fillStyle=color;cityX.beginPath();cityX.arc(sx+GRID-5,sy+5,3,0,Math.PI*2);cityX.fill();
+          cityX.strokeStyle='rgba(0,0,0,0.5)';cityX.lineWidth=0.5;cityX.beginPath();cityX.arc(sx+GRID-5,sy+5,3,0,Math.PI*2);cityX.stroke();
         }
       }
     }
-  }
 }
 
 // ==================== MINIMAP ====================
 function drawMinimap(){
-  const mw=160, mh=100;
-  const sx=mw/MAP_COLS, sy=mh/MAP_ROWS;
+  const mw=160,mh=100,sx=mw/MAP_COLS,sy=mh/MAP_ROWS;
   mmX.clearRect(0,0,mw,mh);
-  for(let r=0;r<MAP_ROWS;r++){
+  for(let r=0;r<MAP_ROWS;r++)
     for(let c=0;c<MAP_COLS;c++){
       const t=TERRAIN[`${c},${r}`]||'grass';
-      const colors={grass:'#2e6b2e',water:'#1a5f8a',sand:'#b8975a',hill:'#4a5c4a'};
-      mmX.fillStyle=colors[t];
+      mmX.fillStyle={grass:'#2e6b2e',water:'#1a5f8a',sand:'#b8975a',hill:'#4a5c4a'}[t];
       mmX.fillRect(c*sx,r*sy,sx+.5,sy+.5);
     }
-  }
-  // District reputation overlay
-  const dsx=DIST_W*sx, dsy=DIST_H*sy;
-  for(let dy=0;dy<DIST_ROWS;dy++){
+  const dsx=DIST_W*sx,dsy=DIST_H*sy;
+  for(let dy=0;dy<DIST_ROWS;dy++)
     for(let dx=0;dx<DIST_COLS;dx++){
       const dist=state.districts[`${dx},${dy}`];
-      if(dist){
-        const rep=dist.reputation;
-        if(rep>55){
-          mmX.fillStyle=`rgba(63,185,80,${(rep-55)/100*0.3})`;
-        } else if(rep<45){
-          mmX.fillStyle=`rgba(248,81,73,${(45-rep)/100*0.3})`;
-        } else { continue; }
-        mmX.fillRect(dx*dsx,dy*dsy,dsx,dsy);
-      }
+      if(!dist) continue;
+      const rep=dist.reputation;
+      if(rep>55) mmX.fillStyle=`rgba(63,185,80,${(rep-55)/100*0.3})`;
+      else if(rep<45) mmX.fillStyle=`rgba(248,81,73,${(45-rep)/100*0.3})`;
+      else continue;
+      mmX.fillRect(dx*dsx,dy*dsy,dsx,dsy);
     }
-  }
-  // Buildings
   for(const key in state.grid){
     const[c,r]=key.split(',').map(Number);
-    mmX.fillStyle='#f0b429';
-    mmX.fillRect(c*sx,r*sy,sx+.5,sy+.5);
+    mmX.fillStyle='#f0b429';mmX.fillRect(c*sx,r*sy,sx+.5,sy+.5);
   }
-  // Viewport rect
-  mmX.strokeStyle='rgba(255,255,255,0.6)'; mmX.lineWidth=1;
-  mmX.strokeRect(cam.x/MAP_W*mw, cam.y/MAP_H*mh, VW/MAP_W*mw, VH/MAP_H*mh);
+  mmX.strokeStyle='rgba(255,255,255,0.6)';mmX.lineWidth=1;
+  mmX.strokeRect(cam.x/MAP_W*mw,cam.y/MAP_H*mh,VW/MAP_W*mw,VH/MAP_H*mh);
 }
 
-// ==================== MOUSE / DRAG ====================
-function getMapCell(ex,ey){
-  const mx=ex+cam.x, my=ey+cam.y;
-  return[Math.floor(mx/GRID), Math.floor(my/GRID)];
-}
-
+// ==================== MOUSE / INPUT ====================
+function getMapCell(ex,ey){ return[Math.floor((ex+cam.x)/GRID),Math.floor((ey+cam.y)/GRID)]; }
 const wrap=document.getElementById('map-wrap');
 
 wrap.addEventListener('mousedown',e=>{
-  dragging=false;
-  dragStart={x:e.clientX,y:e.clientY};
-  camStart={x:cam.x,y:cam.y};
-  wrap.style.cursor='grabbing';
+  dragging=false;dragStart={x:e.clientX,y:e.clientY};camStart={x:cam.x,y:cam.y};wrap.style.cursor='grabbing';
 });
-
 wrap.addEventListener('mousemove',e=>{
-  const dx=e.clientX-dragStart.x, dy=e.clientY-dragStart.y;
+  const dx=e.clientX-dragStart.x,dy=e.clientY-dragStart.y;
   if(Math.abs(dx)>3||Math.abs(dy)>3) dragging=true;
-  if(dragging&&e.buttons===1){
-    cam.x=camStart.x-dx; cam.y=camStart.y-dy; clampCam();
-  }
-  // tooltip
+  if(dragging&&e.buttons===1){cam.x=camStart.x-dx;cam.y=camStart.y-dy;clampCam();}
   const rect=wrap.getBoundingClientRect();
-  const[cx,cy]=getMapCell(e.clientX-rect.left, e.clientY-rect.top);
+  const[cx,cy]=getMapCell(e.clientX-rect.left,e.clientY-rect.top);
   const key=`${cx},${cy}`;
   const tt=document.getElementById('tooltip');
   if(state.grid[key]&&!dragging){
@@ -829,333 +790,256 @@ wrap.addEventListener('mousemove',e=>{
     const b=BUILDINGS.find(x=>x.id===state.grid[key]);
     if(!b||!prop){tt.style.display='none';return;}
     document.getElementById('tt-name').textContent=b.name;
-    document.getElementById('tt-val').innerHTML=`<span>¥${Math.floor(prop.value).toLocaleString()}</span>`;
+    document.getElementById('tt-val').innerHTML=`<span>${fmtMoney(prop.value)}</span>`;
     const changePct=((prop.value-prop.purchasePrice)/prop.purchasePrice*100).toFixed(1);
-    const changeClass=changePct>=0?'up':'dn';
-    document.getElementById('tt-cost').textContent=`¥${prop.purchasePrice.toLocaleString()}`;
-    document.getElementById('tt-change').innerHTML=`<span class="${changeClass}">${changePct>=0?'+':''}${changePct}%</span>`;
+    document.getElementById('tt-cost').textContent=fmtMoney(prop.purchasePrice);
+    document.getElementById('tt-change').innerHTML=`<span class="${changePct>=0?'up':'dn'}">${changePct>=0?'+':''}${changePct}%</span>`;
     if(b.baseRent>0){
-      const monthlyRent=calcPropertyRent(key);
-      document.getElementById('tt-rent').textContent=`¥${Math.floor(monthlyRent).toLocaleString()}`;
+      document.getElementById('tt-rent').textContent=fmtMoney(Math.floor(calcPropertyRent(key)))+'/月';
       document.getElementById('tt-rent-row').style.display='';
       document.getElementById('tt-vac').textContent=`${prop.vacancy.toFixed(1)}%`;
       document.getElementById('tt-vac-row').style.display='';
-    } else {
-      document.getElementById('tt-rent-row').style.display='none';
-      document.getElementById('tt-vac-row').style.display='none';
-    }
+    } else { document.getElementById('tt-rent-row').style.display='none'; document.getElementById('tt-vac-row').style.display='none'; }
     document.getElementById('tt-cond').textContent=`${Math.floor(prop.condition)}/100`;
     const dk=getDistrictKey(cx,cy);
-    const distRep=state.districts[dk]?state.districts[dk].reputation:50;
-    document.getElementById('tt-dist').textContent=`${getDistrictName(dk)} ${Math.floor(distRep)}/100`;
-    tt.style.left=Math.min(e.clientX-rect.left+12,VW-230)+'px';
-    tt.style.top=Math.max(e.clientY-rect.top-120,4)+'px';
+    const di=getDistrictInfo(dk);
+    document.getElementById('tt-dist').textContent=`${getDistrictName(dk)} (${Math.floor(state.districts[dk]?.reputation||50)}) ${di?.desc||''}`;
+    tt.style.left=Math.min(e.clientX-rect.left+12,VW-250)+'px';
+    tt.style.top=Math.max(e.clientY-rect.top-130,4)+'px';
     tt.style.display='block';
   } else tt.style.display='none';
 });
-
 wrap.addEventListener('mouseup',e=>{
-  wrap.style.cursor='crosshair';
-  if(dragging){dragging=false;return;}
+  wrap.style.cursor='crosshair';if(dragging){dragging=false;return;}
   const rect=wrap.getBoundingClientRect();
-  const[cx,cy]=getMapCell(e.clientX-rect.left, e.clientY-rect.top);
+  const[cx,cy]=getMapCell(e.clientX-rect.left,e.clientY-rect.top);
   if(cx<0||cy<0||cx>=MAP_COLS||cy>=MAP_ROWS)return;
-  const key=`${cx},${cy}`;
-  handleClick(key,cx,cy,e.clientX-rect.left,e.clientY-rect.top);
+  handleClick(`${cx},${cy}`,cx,cy,e.clientX-rect.left,e.clientY-rect.top);
 });
+wrap.addEventListener('mouseleave',()=>{document.getElementById('tooltip').style.display='none';dragging=false;wrap.style.cursor='crosshair';});
 
-wrap.addEventListener('mouseleave',()=>{
-  document.getElementById('tooltip').style.display='none';
-  dragging=false; wrap.style.cursor='crosshair';
-});
-
-// Touch support
 let touch0={x:0,y:0};
-wrap.addEventListener('touchstart',e=>{
-  touch0={x:e.touches[0].clientX,y:e.touches[0].clientY};
-  camStart={x:cam.x,y:cam.y}; dragging=false;
-},{passive:true});
+wrap.addEventListener('touchstart',e=>{touch0={x:e.touches[0].clientX,y:e.touches[0].clientY};camStart={x:cam.x,y:cam.y};dragging=false;},{passive:true});
 wrap.addEventListener('touchmove',e=>{
-  const dx=e.touches[0].clientX-touch0.x, dy=e.touches[0].clientY-touch0.y;
-  if(Math.abs(dx)>5||Math.abs(dy)>5) dragging=true;
-  if(dragging){ cam.x=camStart.x-dx; cam.y=camStart.y-dy; clampCam(); }
+  const dx=e.touches[0].clientX-touch0.x,dy=e.touches[0].clientY-touch0.y;
+  if(Math.abs(dx)>5||Math.abs(dy)>5)dragging=true;
+  if(dragging){cam.x=camStart.x-dx;cam.y=camStart.y-dy;clampCam();}
 },{passive:true});
 wrap.addEventListener('touchend',e=>{
   if(dragging){dragging=false;return;}
   const rect=wrap.getBoundingClientRect();
-  const tx=e.changedTouches[0].clientX-rect.left;
-  const ty=e.changedTouches[0].clientY-rect.top;
+  const tx=e.changedTouches[0].clientX-rect.left,ty=e.changedTouches[0].clientY-rect.top;
   const[cx,cy]=getMapCell(tx,ty);
-  if(cx>=0&&cy>=0&&cx<MAP_COLS&&cy<MAP_ROWS){
-    handleClick(`${cx},${cy}`,cx,cy,tx,ty);
-  }
+  if(cx>=0&&cy>=0&&cx<MAP_COLS&&cy<MAP_ROWS) handleClick(`${cx},${cy}`,cx,cy,tx,ty);
 });
-
 mm.addEventListener('click',e=>{
   const rect=mm.getBoundingClientRect();
-  const fx=(e.clientX-rect.left)/160, fy=(e.clientY-rect.top)/100;
-  cam.x=fx*MAP_W - VW/2; cam.y=fy*MAP_H - VH/2; clampCam();
+  cam.x=(e.clientX-rect.left)/160*MAP_W-VW/2;cam.y=(e.clientY-rect.top)/100*MAP_H-VH/2;clampCam();
 });
 
 // ==================== CLICK HANDLING ====================
 function handleClick(key,cx,cy,screenX,screenY){
-  // Demolish mode
   if(isDemolish){
     if(state.grid[key]){
       const prop=state.properties[key];
       const refund=Math.floor((prop?prop.value:0)*0.4);
       const b=BUILDINGS.find(x=>x.id===state.grid[key]);
-      state.money+=refund;
-      state.population-=(b?b.pop:0);
-      delete state.grid[key];
-      delete state.properties[key];
-      updateUI(); buildSidebar();
-      notify(`🗑 取り壊し (+¥${refund.toLocaleString()} 返還)`,'rd');
-    }
-    return;
+      state.money+=refund; state.population-=(b?b.pop:0);
+      delete state.grid[key]; delete state.properties[key];
+      updateUI();buildSidebar();
+      notify(`🗑 取り壊し (+${fmtMoney(refund)} 返還)`,'rd');
+    } return;
   }
-  // Repair mode
   if(isRepairMode){
     if(state.grid[key]&&state.properties[key]){
       const prop=state.properties[key];
       if(prop.condition>=99){notify('✅ 修理不要','gd');return;}
       const b=BUILDINGS.find(x=>x.id===prop.type);
-      const repairCost=Math.floor(b.cost*(100-prop.condition)/100*0.3);
-      if(state.money<repairCost){notify(`💸 修理費 ¥${repairCost.toLocaleString()} 不足`,'rd');return;}
-      state.money-=repairCost;
-      prop.condition=100;
-      updateUI(); buildSidebar();
-      notify(`🔧 修理完了 (-¥${repairCost.toLocaleString()})`,'gr');
-      spawnFloat(screenX,screenY,`-¥${repairCost.toLocaleString()}`,true);
-    }
-    return;
+      const cost=Math.floor(b.cost*(100-prop.condition)/100*0.3);
+      if(state.money<cost){notify(`💸 修理費 ${fmtMoney(cost)} 不足`,'rd');return;}
+      state.money-=cost; prop.condition=100;
+      updateUI();buildSidebar();
+      notify(`🔧 修理完了 (-${fmtMoney(cost)})`,'gr');
+      spawnFloat(screenX,screenY,`-${fmtMoney(cost)}`,true);
+    } return;
   }
-  // Build mode
+  // Build
   if(state.grid[key]){notify('⚠ すでに建物があります','rd');return;}
   const b=BUILDINGS.find(x=>x.id===selectedType);
-  if(!b)return;
+  if(!b) return;
   if(b.tier>state.maxMilestone){notify('🔒 マイルストーン未達で未解放','rd');return;}
   const terrain=TERRAIN[key]||'grass';
-  if(terrain==='water'&&selectedType!=='ocean'){notify('🌊 海には建てられません','rd');return;}
+  if(terrain==='water'&&selectedType!=='ocean'){notify('🌊 水域には建てられません','rd');return;}
 
-  // Auto-borrow if needed
-  if(state.money<b.cost){
-    const needed=b.cost-state.money;
+  // District price adjustment
+  const distMult=getDistrictPriceMult(cx,cy);
+  const adjustedCost=Math.floor(b.cost*distMult);
+
+  // === Require 20% minimum down payment ===
+  const minDown=Math.floor(adjustedCost*0.2);
+  if(state.money<minDown){
+    notify(`💸 頭金 ${fmtMoney(minDown)} が必要`,'rd');
+    return;
+  }
+
+  // Auto-borrow if needed (up to 80% of cost)
+  if(state.money<adjustedCost){
+    const needed=adjustedCost-state.money;
     const maxBorrow=calcMaxLoan()-state.loanBalance;
     if(needed<=maxBorrow){
       borrowMoney(needed);
-      notify(`💳 ¥${Math.floor(needed).toLocaleString()} 自動借入`,'gd');
+      notify(`💳 ${fmtMoney(Math.floor(needed))} 自動借入`,'gd');
     } else {
-      notify('💸 予算も借入枠も不足！','rd');
+      notify(`💸 借入枠不足 (残り${fmtMoney(Math.max(0,Math.floor(maxBorrow)))})`,'rd');
       return;
     }
   }
 
-  state.money-=b.cost;
+  state.money-=adjustedCost;
   state.population+=(b.pop||0);
   state.grid[key]=selectedType;
   state.properties[key]={
-    type:selectedType,
-    purchasePrice:b.cost,
-    value:b.cost,
-    vacancy: b.baseRent>0 ? 30 : 0,
-    condition:100,
-    monthsOwned:0,
+    type:selectedType, purchasePrice:adjustedCost, value:adjustedCost,
+    vacancy:b.baseRent>0?30:0, condition:100, monthsOwned:0,
   };
-  updateUI(); buildSidebar();
-  notify(`✅ ${b.name} 建設 (-¥${b.cost.toLocaleString()})`,'gr');
-  spawnFloat(screenX,screenY,`-¥${b.cost.toLocaleString()}`,true);
+  updateUI();buildSidebar();
+  notify(`✅ ${b.name} 建設 (-${fmtMoney(adjustedCost)})`,'gr');
+  spawnFloat(screenX,screenY,`-${fmtMoney(adjustedCost)}`,true);
 }
 
 // ==================== NET WORTH & MILESTONES ====================
 function calcTotalAssets(){
-  let total=0;
-  for(const prop of Object.values(state.properties)) total+=prop.value;
-  return total;
+  let t=0; for(const p of Object.values(state.properties)) t+=p.value; return t;
 }
-
-function calcNetWorth(){
-  return state.money + calcTotalAssets() - state.loanBalance;
+function calcNetWorth(){ return state.money+calcTotalAssets()-state.loanBalance; }
+function calcTotalMonthlyRent(){
+  let t=0; for(const k of Object.keys(state.properties)) t+=calcPropertyRent(k); return t;
 }
-
 function getMilestoneIndex(){
   const nw=calcNetWorth();
-  for(let i=MILESTONES.length-1;i>=0;i--){
-    if(nw>=MILESTONES[i].threshold) return i;
-  }
+  for(let i=MILESTONES.length-1;i>=0;i--) if(nw>=MILESTONES[i].threshold) return i;
   return -1;
 }
-
 function checkMilestones(){
   const idx=getMilestoneIndex();
-  if(idx>state.maxMilestone){
-    state.maxMilestone=idx;
-    showMilestoneModal(idx);
-    buildSidebar();
-  }
+  if(idx>state.maxMilestone){state.maxMilestone=idx;showMilestoneModal(idx);buildSidebar();}
 }
-
 function showMilestoneModal(idx){
   gamePaused=true;
-  const m=MILESTONES[idx];
   document.getElementById('m-stars').textContent='⭐'.repeat(idx+1);
   document.getElementById('m-title').textContent='MILESTONE!';
-  document.getElementById('m-desc').textContent=`「${m.title}」に昇格！\n新しい建物が解放されます。\n純資産: ¥${Math.floor(calcNetWorth()).toLocaleString()}`;
+  document.getElementById('m-desc').textContent=`「${MILESTONES[idx].title}」に昇格！\n新しい建物が解放されます。\n純資産: ${fmtMoney(Math.floor(calcNetWorth()))}`;
   document.getElementById('m-btn').textContent='OK →';
   document.getElementById('m-btn').onclick=closeModal;
   document.getElementById('modal').classList.add('show');
 }
+function closeModal(){document.getElementById('modal').classList.remove('show');gamePaused=false;}
 
-function closeModal(){
-  document.getElementById('modal').classList.remove('show');
-  gamePaused=false;
-}
-
-// ==================== LOAN SYSTEM ====================
+// ==================== LOAN SYSTEM (with LTV/DTI caps) ====================
 function calcLoanRate(){
-  const riskPremium=(850-state.creditScore)/850*7;
-  return Math.max(0.5,(3+riskPremium+state.rateMod))/100;
+  const risk=(850-state.creditScore)/850*7;
+  return Math.max(0.5,(3+risk+state.rateMod))/100;
 }
-
 function calcMaxLoan(){
   const assets=calcTotalAssets();
-  return (state.creditScore/850)*Math.max(assets*2, 10000);
+  // Starter capacity based on credit (allows first purchase)
+  const starterCap=(state.creditScore/850)*5000; // up to 5,000万円
+  // LTV cap: total loans ≤ 70% of total property value
+  const ltvCap=assets*0.7;
+  const maxTotalDebt=Math.max(starterCap,ltvCap);
+  return Math.max(0,maxTotalDebt-state.loanBalance);
 }
-
 function borrowMoney(amount){
   const newRate=calcLoanRate();
-  if(state.loanBalance>0){
-    state.loanRate=(state.loanBalance*state.loanRate+amount*newRate)/(state.loanBalance+amount);
-  } else {
-    state.loanRate=newRate;
-  }
-  state.loanBalance+=amount;
-  state.money+=amount;
+  if(state.loanBalance>0) state.loanRate=(state.loanBalance*state.loanRate+amount*newRate)/(state.loanBalance+amount);
+  else state.loanRate=newRate;
+  state.loanBalance+=amount; state.money+=amount;
 }
-
 function repayLoan(amount){
-  const actual=Math.min(amount, state.loanBalance, state.money);
+  const actual=Math.min(amount,state.loanBalance,state.money);
   if(actual<=0) return;
-  state.money-=actual;
-  state.loanBalance-=actual;
-  if(state.loanBalance<=0){ state.loanBalance=0; state.loanRate=0; }
+  state.money-=actual; state.loanBalance-=actual;
+  if(state.loanBalance<=0){state.loanBalance=0;state.loanRate=0;}
 }
-
-function openLoanDialog(){
-  gamePaused=true;
-  updateLoanDialog();
-  document.getElementById('loan-modal').classList.add('show');
-}
-
-function closeLoanDialog(){
-  document.getElementById('loan-modal').classList.remove('show');
-  gamePaused=false;
-  updateUI(); buildSidebar();
-}
-
+function openLoanDialog(){gamePaused=true;updateLoanDialog();document.getElementById('loan-modal').classList.add('show');}
+function closeLoanDialog(){document.getElementById('loan-modal').classList.remove('show');gamePaused=false;updateUI();buildSidebar();}
 function updateLoanDialog(){
-  const maxNew=Math.floor(calcMaxLoan()-state.loanBalance);
+  const maxNew=Math.floor(calcMaxLoan());
   const rate=calcLoanRate();
-  const monthlyPayment=state.loanBalance>0 ? state.loanBalance*(state.loanRate/12+0.005) : 0;
-  const body=document.getElementById('loan-body');
-  body.innerHTML=`
+  const mp=state.loanBalance>0?state.loanBalance*(state.loanRate/12+0.005):0;
+  document.getElementById('loan-body').innerHTML=`
     <div class="loan-grid">
       <div><span class="loan-lbl">信用スコア</span><div class="loan-val gold">${state.creditScore}</div></div>
-      <div><span class="loan-lbl">現在の借入残高</span><div class="loan-val red">¥${Math.floor(state.loanBalance).toLocaleString()}</div></div>
+      <div><span class="loan-lbl">借入残高</span><div class="loan-val red">${fmtMoney(Math.floor(state.loanBalance))}</div></div>
       <div><span class="loan-lbl">金利 (年)</span><div class="loan-val">${(rate*100).toFixed(2)}%</div></div>
-      <div><span class="loan-lbl">月々の返済</span><div class="loan-val red">¥${Math.floor(monthlyPayment).toLocaleString()}</div></div>
-      <div><span class="loan-lbl">追加借入可能額</span><div class="loan-val green">¥${maxNew.toLocaleString()}</div></div>
-      <div><span class="loan-lbl">現金</span><div class="loan-val gold">¥${Math.floor(state.money).toLocaleString()}</div></div>
-    </div>
-    <hr class="loan-sep">
-    <div class="loan-row"><label>借入額:</label><input type="number" id="borrow-amt" min="0" max="${maxNew}" value="${Math.min(maxNew,10000)}" step="1000"></div>
+      <div><span class="loan-lbl">月々の返済</span><div class="loan-val red">${fmtMoney(Math.floor(mp))}</div></div>
+      <div><span class="loan-lbl">追加借入可能額</span><div class="loan-val green">${fmtMoney(maxNew)}</div></div>
+      <div><span class="loan-lbl">現金</span><div class="loan-val gold">${fmtMoney(Math.floor(state.money))}</div></div>
+    </div><hr class="loan-sep">
+    <div class="loan-row"><label>借入額:</label><input type="number" id="borrow-amt" min="0" max="${maxNew}" value="${Math.min(maxNew,5000)}" step="100"></div>
     <button class="modal-btn" style="width:100%;margin-bottom:12px" onclick="doBorrow()">💰 借入する</button>
-    ${state.loanBalance>0?`
-    <hr class="loan-sep">
-    <div class="loan-row"><label>返済額:</label><input type="number" id="repay-amt" min="0" max="${Math.floor(Math.min(state.loanBalance,state.money))}" value="${Math.floor(Math.min(state.loanBalance,state.money))}" step="1000"></div>
-    <button class="modal-btn secondary" style="width:100%" onclick="doRepay()">💳 返済する</button>
-    `:''}`;
+    ${state.loanBalance>0?`<hr class="loan-sep">
+    <div class="loan-row"><label>返済額:</label><input type="number" id="repay-amt" min="0" max="${Math.floor(Math.min(state.loanBalance,state.money))}" value="${Math.floor(Math.min(state.loanBalance,state.money))}" step="100"></div>
+    <button class="modal-btn secondary" style="width:100%" onclick="doRepay()">💳 返済する</button>`:''}`;
 }
-
 function doBorrow(){
-  const input=document.getElementById('borrow-amt');
-  const amt=Math.floor(Number(input.value));
-  const maxNew=Math.floor(calcMaxLoan()-state.loanBalance);
+  const amt=Math.floor(Number(document.getElementById('borrow-amt').value));
+  const maxNew=Math.floor(calcMaxLoan());
   if(amt<=0||amt>maxNew){notify('⚠ 無効な借入額','rd');return;}
-  borrowMoney(amt);
-  notify(`💰 ¥${amt.toLocaleString()} 借入完了`,'gr');
-  updateLoanDialog();
+  borrowMoney(amt);notify(`💰 ${fmtMoney(amt)} 借入完了`,'gr');updateLoanDialog();
 }
-
 function doRepay(){
-  const input=document.getElementById('repay-amt');
-  const amt=Math.floor(Number(input.value));
+  const amt=Math.floor(Number(document.getElementById('repay-amt').value));
   if(amt<=0){notify('⚠ 無効な返済額','rd');return;}
-  repayLoan(amt);
-  notify(`💳 ¥${amt.toLocaleString()} 返済完了`,'gr');
-  updateLoanDialog();
+  repayLoan(amt);notify(`💳 ${fmtMoney(amt)} 返済完了`,'gr');updateLoanDialog();
 }
 
 // ==================== RENT & VACANCY ====================
 function calcPropertyRent(key){
-  const prop=state.properties[key];
-  if(!prop) return 0;
-  const b=BUILDINGS.find(x=>x.id===prop.type);
-  if(!b||b.baseRent<=0) return 0;
+  const prop=state.properties[key]; if(!prop) return 0;
+  const b=BUILDINGS.find(x=>x.id===prop.type); if(!b||b.baseRent<=0) return 0;
   const[cx,cy]=key.split(',').map(Number);
   const dk=getDistrictKey(cx,cy);
   const distRep=(state.districts[dk]?state.districts[dk].reputation:50)/50;
-  const condMult=prop.condition>=20 ? Math.max(0.3, prop.condition/100) : 0;
+  const condMult=prop.condition>=20?Math.max(0.3,prop.condition/100):0;
   const popMult=1+state.population/5000;
   return b.baseRent*(1-prop.vacancy/100)*distRep*condMult*popMult;
 }
-
 function updateVacancy(){
   for(const[key,prop] of Object.entries(state.properties)){
-    const b=BUILDINGS.find(x=>x.id===prop.type);
-    if(!b||b.baseRent<=0) continue;
+    const b=BUILDINGS.find(x=>x.id===prop.type); if(!b||b.baseRent<=0) continue;
     const[cx,cy]=key.split(',').map(Number);
     const dk=getDistrictKey(cx,cy);
     const distRep=state.districts[dk]?state.districts[dk].reputation:50;
-    let delta=-2; // natural fill rate
-    delta+=(distRep-50)/100*5; // district factor
-    if(prop.condition<50) delta+=(50-prop.condition)/50*5; // condition penalty
-    delta+=(Math.random()-0.5)*6; // random noise ±3
+    let delta=-2;
+    delta+=(distRep-50)/100*5;
+    if(prop.condition<50) delta+=(50-prop.condition)/50*5;
+    delta+=(Math.random()-0.5)*6;
     if(state.vacancyModMonths>0) delta+=state.vacancyMod;
-    prop.vacancy=Math.max(0, Math.min(100, prop.vacancy+delta));
+    prop.vacancy=Math.max(0,Math.min(100,prop.vacancy+delta));
   }
 }
 
 // ==================== PROPERTY VALUES ====================
 function calcAdjacencyBonus(cx,cy){
   let bonus=0;
-  for(let dx=-1;dx<=1;dx++){
-    for(let dy=-1;dy<=1;dy++){
-      if(dx===0&&dy===0) continue;
-      const nk=`${cx+dx},${cy+dy}`;
-      const np=state.properties[nk];
-      if(np){
-        const nb=BUILDINGS.find(x=>x.id===np.type);
-        if(nb&&nb.cat==='infra') bonus+=0.005;
-        else bonus+=0.002;
-      }
-    }
+  for(let dx=-1;dx<=1;dx++) for(let dy=-1;dy<=1;dy++){
+    if(dx===0&&dy===0) continue;
+    const np=state.properties[`${cx+dx},${cy+dy}`];
+    if(np){const nb=BUILDINGS.find(x=>x.id===np.type);bonus+=(nb&&nb.cat==='infra')?0.003:0.001;}
   }
   return bonus;
 }
-
 function updatePropertyValues(){
   for(const[key,prop] of Object.entries(state.properties)){
     const[cx,cy]=key.split(',').map(Number);
     const dk=getDistrictKey(cx,cy);
     const distRep=state.districts[dk]?state.districts[dk].reputation:50;
-    const distGrowth=(distRep-50)/1000; // -5% to +5% mapped from reputation 0-100
+    const distGrowth=(distRep-50)/5000; // -1% to +1% from district
     const adjBonus=calcAdjacencyBonus(cx,cy);
-    const marketNoise=(Math.random()-0.5)*0.06; // ±3%
-    let marketEvent=0;
-    if(state.marketModMonths>0) marketEvent=state.marketMod;
-    const totalGrowth=distGrowth+adjBonus+marketNoise+marketEvent;
-    prop.value=Math.max(prop.purchasePrice*0.1, prop.value*(1+totalGrowth));
+    const noise=(Math.random()-0.5)*0.02; // ±1%
+    let mktEv=0; if(state.marketModMonths>0) mktEv=state.marketMod;
+    prop.value=Math.max(prop.purchasePrice*0.2, prop.value*(1+distGrowth+adjBonus+noise+mktEv));
   }
 }
 
@@ -1163,197 +1047,107 @@ function updatePropertyValues(){
 function degradeBuildings(){
   for(const prop of Object.values(state.properties)){
     const b=BUILDINGS.find(x=>x.id===prop.type);
-    const rate=b&&b.cat==='infra'?0.5:1;
-    prop.condition=Math.max(0, prop.condition-rate);
+    prop.condition=Math.max(0,prop.condition-(b&&b.cat==='infra'?0.5:1));
   }
 }
 
 // ==================== EVENTS ====================
 function rollForEvent(){
-  if(Math.random()>0.30) return; // 30% chance per month
-  const totalWeight=EVENT_TYPES.reduce((s,e)=>s+e.weight,0);
-  let roll=Math.random()*totalWeight;
-  for(const ev of EVENT_TYPES){
-    roll-=ev.weight;
-    if(roll<=0){ executeEvent(ev); return; }
-  }
+  if(Math.random()>0.30) return;
+  const tw=EVENT_TYPES.reduce((s,e)=>s+e.weight,0);
+  let roll=Math.random()*tw;
+  for(const ev of EVENT_TYPES){roll-=ev.weight;if(roll<=0){executeEvent(ev);return;}}
 }
-
 function executeEvent(ev){
   let detail='';
   switch(ev.id){
-    case 'boom':
-      state.marketMod=0.03; state.marketModMonths=3;
-      detail='全物件の価値が上昇中 (3ヶ月間)';
-      break;
-    case 'crash':
-      state.marketMod=-0.05; state.marketModMonths=6;
-      detail='全物件の価値が下落中 (6ヶ月間)';
-      break;
+    case 'boom': state.marketMod=0.02;state.marketModMonths=3;detail='全物件の価値上昇中 (3ヶ月)';break;
+    case 'crash': state.marketMod=-0.03;state.marketModMonths=6;detail='全物件の価値下落中 (6ヶ月)';break;
     case 'quake':{
-      const dks=Object.keys(state.districts);
-      const dk=dks[Math.floor(Math.random()*dks.length)];
-      const[ddx,ddy]=dk.split(',').map(Number);
-      let damaged=0;
-      for(let cy=ddy*DIST_H;cy<Math.min((ddy+1)*DIST_H,MAP_ROWS);cy++){
+      const dks=Object.keys(state.districts);const dk=dks[Math.floor(Math.random()*dks.length)];
+      const[ddx,ddy]=dk.split(',').map(Number); let dmg=0;
+      for(let cy=ddy*DIST_H;cy<Math.min((ddy+1)*DIST_H,MAP_ROWS);cy++)
         for(let cx=ddx*DIST_W;cx<Math.min((ddx+1)*DIST_W,MAP_COLS);cx++){
-          const prop=state.properties[`${cx},${cy}`];
-          if(prop){ prop.condition=Math.max(0,prop.condition-(20+Math.random()*30)); damaged++; }
-        }
-      }
-      detail=`${getDistrictName(dk)}地区: ${damaged}棟に被害`;
-      break;
-    }
+          const p=state.properties[`${cx},${cy}`];if(p){p.condition=Math.max(0,p.condition-(20+Math.random()*30));dmg++;}}
+      detail=`${getDistrictName(dk)}: ${dmg}棟に被害`;break;}
     case 'fire':{
-      const keys=Object.keys(state.properties);
-      if(keys.length===0){detail='被害なし';break;}
-      const key=keys[Math.floor(Math.random()*keys.length)];
-      const prop=state.properties[key];
-      const b=BUILDINGS.find(x=>x.id===prop.type);
-      prop.condition=Math.max(0,prop.condition-60-Math.random()*30);
-      detail=`${b?b.name:'建物'}が被害を受けました`;
-      break;
-    }
+      const keys=Object.keys(state.properties);if(!keys.length){detail='被害なし';break;}
+      const k=keys[Math.floor(Math.random()*keys.length)];const p=state.properties[k];
+      const b=BUILDINGS.find(x=>x.id===p.type);p.condition=Math.max(0,p.condition-60-Math.random()*30);
+      detail=`${b?b.name:'建物'}が被害`;break;}
     case 'exodus':{
-      const dks=Object.keys(state.districts);
-      const dk=dks[Math.floor(Math.random()*dks.length)];
-      state.districts[dk].reputation=Math.max(0,state.districts[dk].reputation-30);
-      detail=`${getDistrictName(dk)}地区の評判が大幅低下`;
-      break;
-    }
+      const dks=Object.keys(state.districts);const dk=dks[Math.floor(Math.random()*dks.length)];
+      state.districts[dk].reputation=Math.max(5,state.districts[dk].reputation-30);
+      detail=`${getDistrictName(dk)}の評判が大幅低下`;break;}
     case 'redev':{
-      const dks=Object.keys(state.districts);
-      const dk=dks[Math.floor(Math.random()*dks.length)];
-      state.districts[dk].reputation=Math.min(100,state.districts[dk].reputation+20);
-      detail=`${getDistrictName(dk)}地区が再開発で活性化`;
-      break;
-    }
+      const dks=Object.keys(state.districts);const dk=dks[Math.floor(Math.random()*dks.length)];
+      state.districts[dk].reputation=Math.min(98,state.districts[dk].reputation+20);
+      detail=`${getDistrictName(dk)}が再開発で活性化`;break;}
     case 'rate':{
-      const change=Math.random()>0.5?1:-1;
-      state.rateMod=Math.max(-2,Math.min(3,state.rateMod+change));
-      // Recalculate existing loan rate
+      const c=Math.random()>0.5?1:-1;state.rateMod=Math.max(-2,Math.min(3,state.rateMod+c));
       if(state.loanBalance>0) state.loanRate=calcLoanRate();
-      detail=`金利が${change>0?'上昇':'低下'}しました`;
-      break;
-    }
+      detail=`金利が${c>0?'上昇':'低下'}`;break;}
     case 'vacancy':{
-      const types=['residential','commercial'];
-      const targetCat=types[Math.floor(Math.random()*types.length)];
-      let affected=0;
-      for(const prop of Object.values(state.properties)){
-        const b=BUILDINGS.find(x=>x.id===prop.type);
-        if(b&&b.cat===targetCat&&b.baseRent>0){
-          prop.vacancy=Math.min(100,prop.vacancy+40);
-          affected++;
-        }
-      }
-      detail=`${targetCat==='residential'?'住居':'商業'}物件の空室率が急増 (${affected}棟)`;
-      break;
-    }
+      const cats=['residential','commercial'];const tc=cats[Math.floor(Math.random()*cats.length)];let n=0;
+      for(const p of Object.values(state.properties)){
+        const b=BUILDINGS.find(x=>x.id===p.type);if(b&&b.cat===tc&&b.baseRent>0){p.vacancy=Math.min(100,p.vacancy+40);n++;}}
+      detail=`${tc==='residential'?'住居':'商業'}物件の空室急増 (${n}棟)`;break;}
   }
-  addEventLog(`${ev.icon} ${ev.name}: ${detail}`, ev.type);
-  notify(`${ev.icon} ${ev.name}`, ev.type==='good'?'gr':ev.type==='bad'?'rd':'gd');
+  addEventLog(`${ev.icon} ${ev.name}: ${detail}`,ev.type);
+  notify(`${ev.icon} ${ev.name}`,ev.type==='good'?'gr':ev.type==='bad'?'rd':'gd');
 }
-
-function addEventLog(text, type){
-  state.eventLog.unshift({text, type, year:state.year, month:state.month});
+function addEventLog(text,type){
+  state.eventLog.unshift({text,type,year:state.year,month:state.month});
   if(state.eventLog.length>20) state.eventLog.pop();
   renderEventLog();
 }
-
 function renderEventLog(){
-  const el=document.getElementById('event-log');
-  const recent=state.eventLog.slice(0,5);
-  el.innerHTML=recent.map(e=>`<div class="ev-item ${e.type}"><span class="ev-date">${e.year}Y${e.month}M</span>${e.text}</div>`).join('');
+  document.getElementById('event-log').innerHTML=state.eventLog.slice(0,5).map(e=>
+    `<div class="ev-item ${e.type}"><span class="ev-date">${e.year}Y${e.month}M</span>${e.text}</div>`
+  ).join('');
 }
 
 // ==================== MONTHLY TICK ====================
 function monthlyTick(){
-  // Advance time
-  state.month++;
-  if(state.month>12){ state.month=1; state.year++; }
-
-  // Age properties
-  for(const prop of Object.values(state.properties)) prop.monthsOwned++;
-
-  // Update districts
+  state.month++; if(state.month>12){state.month=1;state.year++;}
+  for(const p of Object.values(state.properties)) p.monthsOwned++;
   updateDistricts();
-
-  // Update property values
   updatePropertyValues();
-
-  // Update vacancy
   updateVacancy();
-
-  // Collect rent
   let totalRent=0;
-  for(const key of Object.keys(state.properties)){
-    const rent=calcPropertyRent(key);
-    if(rent>0) totalRent+=rent;
-  }
+  for(const k of Object.keys(state.properties)){const r=calcPropertyRent(k);if(r>0) totalRent+=r;}
   state.money+=totalRent;
-
-  // Process loans
+  // Loan payments
   if(state.loanBalance>0){
-    const monthlyInterest=state.loanBalance*state.loanRate/12;
-    const minPrincipal=state.loanBalance*0.005;
-    const payment=monthlyInterest+minPrincipal;
+    const interest=state.loanBalance*state.loanRate/12;
+    const principal=state.loanBalance*0.005;
+    const payment=interest+principal;
     if(state.money>=payment){
-      state.money-=payment;
-      state.loanBalance=Math.max(0,state.loanBalance-minPrincipal);
+      state.money-=payment;state.loanBalance=Math.max(0,state.loanBalance-principal);
       if(state.loanBalance<=0) state.loanRate=0;
       state.creditScore=Math.min(850,state.creditScore+2);
     } else {
-      // Missed payment
-      state.loanBalance+=monthlyInterest;
-      state.creditScore=Math.max(300,state.creditScore-20);
-      addEventLog('⚠️ 返済不能: 利息が残高に加算されました','bad');
+      state.loanBalance+=interest;state.creditScore=Math.max(300,state.creditScore-20);
+      addEventLog('⚠️ 返済不能: 利息加算','bad');
     }
   }
-
-  // Degrade buildings
   degradeBuildings();
-
-  // Decay active modifiers
-  if(state.marketModMonths>0){
-    state.marketModMonths--;
-    if(state.marketModMonths<=0) state.marketMod=0;
-  }
-  if(state.vacancyModMonths>0){
-    state.vacancyModMonths--;
-    if(state.vacancyModMonths<=0) state.vacancyMod=0;
-  }
-
-  // Random event
+  if(state.marketModMonths>0){state.marketModMonths--;if(state.marketModMonths<=0)state.marketMod=0;}
+  if(state.vacancyModMonths>0){state.vacancyModMonths--;if(state.vacancyModMonths<=0)state.vacancyMod=0;}
   rollForEvent();
-
-  // Credit score from portfolio
-  const assets=calcTotalAssets();
-  if(assets>0) state.creditScore=Math.min(850,state.creditScore+Math.min(3,Math.floor(assets/100000)));
-
-  // Check milestones
+  if(calcTotalAssets()>0) state.creditScore=Math.min(850,state.creditScore+Math.min(3,Math.floor(calcTotalAssets()/100000)));
   checkMilestones();
-
-  // Bankruptcy check
   const nw=calcNetWorth();
-  if(nw<-10000){
-    state.bankruptMonths++;
-    if(state.bankruptMonths>=6) showBankruptModal();
-    else if(state.bankruptMonths>=3) addEventLog('⚠️ 破産警告: 純資産がマイナスです！','bad');
-  } else {
-    state.bankruptMonths=0;
-  }
-
-  // Update everything
-  updateUI();
-  buildSidebar();
+  if(nw<-5000){state.bankruptMonths++;if(state.bankruptMonths>=6) showBankruptModal();
+    else if(state.bankruptMonths>=3) addEventLog('⚠️ 破産警告！','bad');
+  } else state.bankruptMonths=0;
+  updateUI();buildSidebar();
 }
-
 function showBankruptModal(){
   gamePaused=true;
   document.getElementById('m-stars').textContent='💸💸💸';
   document.getElementById('m-title').textContent='破産！';
-  document.getElementById('m-desc').textContent=`借入金が資産を大幅に上回りました。\nゲームオーバーです。\n\n最終純資産: ¥${Math.floor(calcNetWorth()).toLocaleString()}`;
+  document.getElementById('m-desc').textContent=`借入金が資産を大幅に上回りました。\n\n最終純資産: ${fmtMoney(Math.floor(calcNetWorth()))}`;
   document.getElementById('m-btn').textContent='リセットして再挑戦';
   document.getElementById('m-btn').onclick=function(){closeModal();confirmReset();};
   document.getElementById('modal').classList.add('show');
@@ -1361,103 +1155,62 @@ function showBankruptModal(){
 
 // ==================== UI ====================
 function updateUI(){
-  document.getElementById('s-money').textContent=`¥${Math.floor(state.money).toLocaleString()}`;
-  document.getElementById('s-assets').textContent=`¥${Math.floor(calcTotalAssets()).toLocaleString()}`;
-  document.getElementById('s-debt').textContent=`¥${Math.floor(state.loanBalance).toLocaleString()}`;
+  document.getElementById('s-money').textContent=fmtMoney(Math.floor(state.money));
+  document.getElementById('s-assets').textContent=fmtMoney(Math.floor(calcTotalAssets()));
+  document.getElementById('s-debt').textContent=fmtMoney(Math.floor(state.loanBalance));
   const nw=calcNetWorth();
-  document.getElementById('s-networth').textContent=`¥${Math.floor(nw).toLocaleString()}`;
+  document.getElementById('s-networth').textContent=fmtMoney(Math.floor(nw));
   document.getElementById('s-date').textContent=`${state.year}年 ${state.month}月`;
-
-  // Milestone bar
   const idx=state.maxMilestone;
-  const m=MILESTONES[idx];
-  document.getElementById('milestone-name').textContent=m?m.title:'初心者';
+  document.getElementById('milestone-name').textContent=MILESTONES[idx]?.title||'初心者';
   if(idx<MILESTONES.length-1){
-    const next=MILESTONES[idx+1];
-    const prev=m?m.threshold:0;
+    const next=MILESTONES[idx+1],prev=MILESTONES[idx]?.threshold||0;
     const pct=Math.max(0,Math.min(100,(nw-prev)/(next.threshold-prev)*100));
     document.getElementById('milestone-fill').style.width=pct+'%';
-    document.getElementById('milestone-goal').textContent=`次: 純資産 ¥${next.threshold.toLocaleString()} (${Math.floor(pct)}%)`;
+    document.getElementById('milestone-goal').textContent=`次: ${fmtMoney(next.threshold)} (${Math.floor(pct)}%)`;
   } else {
     document.getElementById('milestone-fill').style.width='100%';
     document.getElementById('milestone-goal').textContent='最高ランク達成！';
   }
 }
-
 function notify(text,type='gd'){
-  const el=document.getElementById('notif');
-  el.textContent=text; el.className=`notif show ${type}`;
-  clearTimeout(notifTO);
-  notifTO=setTimeout(()=>el.classList.remove('show'),2200);
+  const el=document.getElementById('notif');el.textContent=text;el.className=`notif show ${type}`;
+  clearTimeout(notifTO);notifTO=setTimeout(()=>el.classList.remove('show'),2200);
 }
-
 function spawnFloat(x,y,text,isDebit){
-  const c=document.getElementById('map-wrap');
-  const el=document.createElement('div');
-  el.className='ifloat'; el.textContent=text;
-  el.style.left=x+'px'; el.style.top=y+'px';
-  el.style.color=isDebit?'#f85149':'#3fb950';
-  c.appendChild(el);
-  setTimeout(()=>el.remove(),1400);
+  const el=document.createElement('div');el.className='ifloat';el.textContent=text;
+  el.style.left=x+'px';el.style.top=y+'px';el.style.color=isDebit?'#f85149':'#3fb950';
+  document.getElementById('map-wrap').appendChild(el);setTimeout(()=>el.remove(),1400);
 }
 
 // ==================== SAVE / LOAD ====================
-const SK='empireBuilder_v1';
-
+const SK='empireBuilder_tokyo_v2';
 function saveGame(){
   try{
-    const saveData={
-      ...state,
-      money:Math.floor(state.money*100)/100,
-      cam,
-      savedAt:new Date().toISOString()
-    };
-    localStorage.setItem(SK,JSON.stringify(saveData));
+    localStorage.setItem(SK,JSON.stringify({...state,money:Math.floor(state.money*100)/100,cam,savedAt:new Date().toISOString()}));
     notify('💾 セーブしました！','gr');
   }catch(e){notify('❌ セーブ失敗','rd');}
 }
-
 function loadGame(){
   try{
-    const raw=localStorage.getItem(SK);
-    if(!raw){notify('📂 セーブデータなし','rd');return;}
+    const raw=localStorage.getItem(SK); if(!raw){notify('📂 セーブデータなし','rd');return;}
     const d=JSON.parse(raw);
-    state={
-      money:d.money||10000,
-      year:d.year||1,
-      month:d.month||1,
-      loanBalance:d.loanBalance||0,
-      loanRate:d.loanRate||0,
-      creditScore:d.creditScore||600,
-      maxMilestone:d.maxMilestone||0,
-      population:d.population||0,
-      grid:d.grid||{},
-      properties:d.properties||{},
-      districts:d.districts||{},
-      eventLog:d.eventLog||[],
-      marketMod:d.marketMod||0,
-      marketModMonths:d.marketModMonths||0,
-      vacancyMod:d.vacancyMod||0,
-      vacancyModMonths:d.vacancyModMonths||0,
-      rateMod:d.rateMod||0,
-      bankruptMonths:d.bankruptMonths||0,
-    };
+    state={money:d.money||10000,year:d.year||1,month:d.month||1,loanBalance:d.loanBalance||0,loanRate:d.loanRate||0,
+      creditScore:d.creditScore||600,maxMilestone:d.maxMilestone||0,population:d.population||0,
+      grid:d.grid||{},properties:d.properties||{},districts:d.districts||{},eventLog:d.eventLog||[],
+      marketMod:d.marketMod||0,marketModMonths:d.marketModMonths||0,vacancyMod:d.vacancyMod||0,
+      vacancyModMonths:d.vacancyModMonths||0,rateMod:d.rateMod||0,bankruptMonths:d.bankruptMonths||0};
     if(d.cam) Object.assign(cam,d.cam);
-    clampCam();
-    updateUI(); buildSidebar(); renderEventLog(); drawBg(); drawCity();
+    clampCam();updateUI();buildSidebar();renderEventLog();drawBg();drawCity();
     notify('📂 ロード完了！','gd');
   }catch(e){notify('❌ ロード失敗','rd');}
 }
-
 function confirmReset(){
   if(confirm('本当にリセットしますか？全てのデータが失われます。')){
-    localStorage.removeItem(SK);
-    state=defaultState();
-    initDistricts();
-    cam={x:MAP_W/2-VW/2,y:MAP_H/2-VH/2}; clampCam();
-    selectedType='house'; isDemolish=false; isRepairMode=false;
-    lastMonthTime=Date.now();
-    updateUI(); buildSidebar(); renderEventLog(); drawBg(); drawCity();
+    localStorage.removeItem(SK);state=defaultState();initDistricts();
+    cam={x:MAP_W/2-VW/2,y:MAP_H/2-VH/2};clampCam();
+    selectedType='house';isDemolish=false;isRepairMode=false;lastMonthTime=Date.now();
+    updateUI();buildSidebar();renderEventLog();drawBg();drawCity();
     notify('🔄 リセットしました','gd');
   }
 }
@@ -1465,16 +1218,7 @@ function confirmReset(){
 // ==================== GAME LOOP ====================
 function animate(){
   animFrame++;
-
-  // Monthly tick
-  if(!gamePaused){
-    const now=Date.now();
-    if(now-lastMonthTime>=MONTH_MS){
-      lastMonthTime=now;
-      monthlyTick();
-    }
-  }
-
+  if(!gamePaused&&Date.now()-lastMonthTime>=MONTH_MS){lastMonthTime=Date.now();monthlyTick();}
   if(animFrame%3===0) drawBg();
   drawCity();
   if(animFrame%10===0) drawMinimap();
@@ -1483,32 +1227,18 @@ function animate(){
 
 // ==================== INIT ====================
 generateTerrain();
-
 window.addEventListener('resize',resize);
 resize();
+cam.x=MAP_W/2-VW/2;cam.y=MAP_H/2-VH/2;clampCam();
 
-cam.x=MAP_W/2-VW/2; cam.y=MAP_H/2-VH/2; clampCam();
-
-// Initialize districts (or load from save)
 const hasSave=localStorage.getItem(SK);
 if(hasSave){
-  setTimeout(()=>{
-    if(confirm('前回のセーブデータがあります。ロードしますか？')){
-      loadGame();
-    } else {
-      initDistricts();
-      buildSidebar(); updateUI();
-    }
-  },400);
-} else {
-  initDistricts();
-}
+  setTimeout(()=>{if(confirm('前回のセーブデータがあります。ロードしますか？'))loadGame();else{initDistricts();buildSidebar();updateUI();}},400);
+} else initDistricts();
 
-buildSidebar(); updateUI();
+buildSidebar();updateUI();
 setInterval(()=>{if(!gamePaused)saveGame();},60000);
-
 animate();
 </script>
-
 </body>
 </html>
