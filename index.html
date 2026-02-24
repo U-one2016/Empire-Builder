@@ -332,97 +332,166 @@ const mmX   = mm.getContext('2d');
 
 // ==================== TOKYO TERRAIN ====================
 const TERRAIN = {};
-const TERRAIN_COLORS = {grass:'#3a6b3a', water:'#1a6fa0', sand:'#c2a46b', hill:'#6b7d6b'};
-const TERRAIN_DARK = {grass:'#2e5430', water:'#154d72', sand:'#a8884a', hill:'#546059'};
+const TERRAIN_COLORS = {grass:'#3a6b3a', water:'#1a6fa0', sand:'#c2a46b', hill:'#6b7d6b', rail:'#888888', station:'#ffffff'};
+const TERRAIN_DARK = {grass:'#2e5430', water:'#154d72', sand:'#a8884a', hill:'#546059', rail:'#666666', station:'#cccccc'};
+const STATIONS = [
+  // ═══ 山手線 ═══
+  {x:34,y:10,n:'池袋'},{x:38,y:8,n:'巣鴨'},{x:42,y:8,n:'田端'},
+  {x:45,y:11,n:'日暮里'},{x:47,y:15,n:'上野'},{x:47,y:19,n:'秋葉原'},
+  {x:47,y:21,n:'神田'},{x:47,y:23,n:'東京'},{x:47,y:25,n:'有楽町'},
+  {x:46,y:27,n:'新橋'},{x:45,y:29,n:'浜松町'},{x:44,y:31,n:'田町'},
+  {x:42,y:34,n:'品川'},{x:40,y:35,n:'大崎'},{x:38,y:34,n:'五反田'},
+  {x:36,y:33,n:'目黒'},{x:35,y:31,n:'恵比寿'},{x:33,y:29,n:'渋谷'},
+  {x:31,y:27,n:'原宿'},{x:30,y:25,n:'代々木'},{x:30,y:22,n:'新宿'},
+  {x:30,y:19,n:'新大久保'},{x:31,y:16,n:'高田馬場'},{x:32,y:13,n:'目白'},
+  {x:43,y:33,n:'高輪GW'},{x:46,y:13,n:'鶯谷'},{x:47,y:17,n:'御徒町'},
+  {x:36,y:9,n:'大塚'},{x:40,y:8,n:'駒込'},{x:44,y:9,n:'西日暮里'},
+  // ═══ 中央線 ═══
+  {x:8,y:22,n:'三鷹'},{x:12,y:22,n:'吉祥寺'},{x:16,y:22,n:'荻窪'},
+  {x:22,y:22,n:'中野'},{x:38,y:22,n:'四ツ谷'},{x:44,y:20,n:'御茶ノ水'},
+  // ═══ 総武線 ═══
+  {x:52,y:19,n:'両国'},{x:56,y:19,n:'錦糸町'},{x:60,y:19,n:'亀戸'},
+  {x:68,y:19,n:'新小岩'},{x:72,y:19,n:'小岩'},
+  // ═══ 京浜東北線 北 ═══
+  {x:43,y:6,n:'上中里'},{x:44,y:4,n:'王子'},{x:44,y:1,n:'赤羽'},
+  // ═══ 京浜東北線 南 ═══
+  {x:40,y:37,n:'大井町'},{x:38,y:40,n:'大森'},{x:36,y:44,n:'蒲田'},
+  // ═══ 埼京線 ═══
+  {x:34,y:7,n:'板橋'},{x:35,y:4,n:'十条'},{x:36,y:2,n:'北赤羽'},
+  // ═══ 常磐線 ═══
+  {x:52,y:6,n:'北千住'},
+  // ═══ 京葉線 ═══
+  {x:49,y:25,n:'八丁堀'},{x:56,y:30,n:'新木場'},{x:65,y:35,n:'葛西臨海'},
+  // ═══ りんかい線 ═══
+  {x:48,y:37,n:'天王洲'},{x:56,y:38,n:'東京テレポート'},{x:60,y:37,n:'国際展示場'},
+  // ═══ モノレール ═══
+  {x:50,y:41,n:'流通センター'},
+  // ═══ 南武線 ═══
+  {x:34,y:49,n:'川崎'},{x:28,y:46,n:'矢向'},
+];
 
 function generateTerrain(){
-  // Fill with grass
-  for(let cy=0;cy<MAP_ROWS;cy++)
-    for(let cx=0;cx<MAP_COLS;cx++)
-      TERRAIN[`${cx},${cy}`]='grass';
+  function interpX(wp,cy){
+    if(cy<=wp[0].y)return wp[0].x;if(cy>=wp[wp.length-1].y)return wp[wp.length-1].x;
+    for(let i=0;i<wp.length-1;i++){const a=wp[i],b=wp[i+1];
+      if(cy>=a.y&&cy<=b.y)return a.x+(b.x-a.x)*(cy-a.y)/(b.y-a.y);}
+    return wp[wp.length-1].x;
+  }
+  function set(cx,cy,t){if(cx>=0&&cx<MAP_COLS&&cy>=0&&cy<MAP_ROWS)TERRAIN[`${cx},${cy}`]=t;}
+  function get(cx,cy){return(cx>=0&&cx<MAP_COLS&&cy>=0&&cy<MAP_ROWS)?TERRAIN[`${cx},${cy}`]:null;}
 
-  // === Tokyo Bay (東京湾) — southeast curved coastline ===
+  for(let cy=0;cy<MAP_ROWS;cy++)
+    for(let cx=0;cx<MAP_COLS;cx++) TERRAIN[`${cx},${cy}`]='grass';
+
+  // Tokyo Bay — small wedge in far SE corner
+  const coast=[
+    {x:80,y:0},{x:80,y:30},
+    {x:76,y:34},
+    {x:70,y:38},
+    {x:62,y:42},
+    {x:54,y:46},
+    {x:48,y:49}
+  ];
   for(let cy=0;cy<MAP_ROWS;cy++){
-    let bayX;
-    if(cy<8) bayX=80;
-    else if(cy<16) bayX=75-(cy-8)*1.0;
-    else if(cy<24) bayX=67-(cy-16)*0.9;
-    else if(cy<32) bayX=59.8-(cy-24)*0.6;
-    else if(cy<40) bayX=55-(cy-32)*0.4;
-    else bayX=51.8-(cy-40)*0.3;
-    bayX+=Math.sin(cy*0.5)*1.2+Math.sin(cy*1.3)*0.6;
-    for(let cx=Math.max(0,Math.floor(bayX));cx<MAP_COLS;cx++)
-      TERRAIN[`${cx},${cy}`]='water';
+    const bx=Math.floor(interpX(coast,cy));
+    for(let cx=Math.max(0,bx);cx<MAP_COLS;cx++) set(cx,cy,'water');
   }
 
-  // Reclaimed land: お台場 area
-  for(let cy=33;cy<39;cy++)
-    for(let cx=57;cx<63;cx++)
-      if(Math.sqrt((cx-60)**2+(cy-36)**2)<3.2) TERRAIN[`${cx},${cy}`]='grass';
-  // 豊洲 bump
-  for(let cy=28;cy<33;cy++)
-    for(let cx=56;cx<60;cx++)
-      if(cy<31||cx<58) TERRAIN[`${cx},${cy}`]='grass';
+  // ═══ Odaiba reclaimed land (台場・有明・国際展示場) ═══
+  for(let cy=36;cy<=41;cy++)
+    for(let cx=56;cx<=68;cx++) set(cx,cy,'grass');
 
-  // === 隅田川 (Sumida River) — north to south ===
-  for(let cy=2;cy<45;cy++){
-    const rx=50+Math.sin(cy*0.25)*1.8+Math.sin(cy*0.6)*0.5;
-    const k=`${Math.round(rx)},${cy}`;
-    if(TERRAIN[k]==='water') break; // reached bay
-    TERRAIN[k]='water';
-  }
-
-  // === 荒川 (Arakawa) — wider, parallel east of Sumida ===
-  for(let cy=0;cy<42;cy++){
-    const rx=54+cy*0.06+Math.sin(cy*0.2)*1.5;
-    const r=Math.round(rx);
-    if(r>=MAP_COLS) continue;
-    const k=`${r},${cy}`;
-    if(TERRAIN[k]==='water'&&cy>20) break;
-    TERRAIN[k]='water';
-    if(r+1<MAP_COLS) TERRAIN[`${r+1},${cy}`]='water'; // wider
-  }
-
-  // === 多摩川 (Tama River) — southern border ===
-  for(let cx=0;cx<48;cx++){
-    const ry=47+Math.sin(cx*0.12)*0.8;
-    const r=Math.round(ry);
-    if(r<MAP_ROWS) TERRAIN[`${cx},${r}`]='water';
-    if(r+1<MAP_ROWS) TERRAIN[`${cx},${r+1}`]='water';
-  }
-
-  // === 皇居 (Imperial Palace moat) ===
-  for(let cy=20;cy<25;cy++)
-    for(let cx=41;cx<46;cx++)
-      if(Math.sqrt((cx-43.5)**2+(cy-22.5)**2)<2.2) TERRAIN[`${cx},${cy}`]='water';
-  // Gardens
-  for(let cy=19;cy<26;cy++)
-    for(let cx=40;cx<47;cx++){
-      const d=Math.sqrt((cx-43.5)**2+(cy-22.5)**2);
-      if(d>=2.2&&d<3.5&&TERRAIN[`${cx},${cy}`]==='grass') TERRAIN[`${cx},${cy}`]='hill';
-    }
-
-  // === 武蔵野台地 (Musashino Plateau — western hills) ===
+  // Western hills
   for(let cy=0;cy<MAP_ROWS;cy++)
-    for(let cx=0;cx<22;cx++){
-      if(TERRAIN[`${cx},${cy}`]!=='grass') continue;
+    for(let cx=0;cx<16;cx++){
+      if(get(cx,cy)!=='grass') continue;
       const n=Math.sin(cx*0.4+cy*0.3)*Math.cos(cy*0.35+cx*0.2)+Math.sin(cx*0.7+cy*0.5)*0.4;
-      if((cx<12&&n>0.3)||(cx<18&&n>0.6)||(cx<22&&n>0.8)) TERRAIN[`${cx},${cy}`]='hill';
+      if((cx<6&&n>0.2)||(cx<10&&n>0.5)||(cx<16&&n>0.9)) set(cx,cy,'hill');
     }
 
-  // === Sand along all water edges ===
-  const sandKeys=[];
-  for(let cy=0;cy<MAP_ROWS;cy++)
-    for(let cx=0;cx<MAP_COLS;cx++){
-      if(TERRAIN[`${cx},${cy}`]!=='grass') continue;
-      for(const[dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]){
-        const nx=cx+dx,ny=cy+dy;
-        if(nx>=0&&nx<MAP_COLS&&ny>=0&&ny<MAP_ROWS&&TERRAIN[`${nx},${ny}`]==='water'){
-          sandKeys.push(`${cx},${cy}`); break;
-        }
+  // ═══ Rail line drawing helper ═══
+  function drawLine(waypoints, overWater){
+    for(let i=0;i<waypoints.length-1;i++){
+      const a=waypoints[i],b=waypoints[i+1];
+      const steps=Math.max(Math.abs(b.x-a.x),Math.abs(b.y-a.y));
+      for(let s=0;s<=steps;s++){
+        const cx=Math.round(a.x+(b.x-a.x)*s/Math.max(steps,1));
+        const cy=Math.round(a.y+(b.y-a.y)*s/Math.max(steps,1));
+        if(!get(cx,cy)) continue;
+        if(overWater || get(cx,cy)!=='water') set(cx,cy,'rail');
       }
     }
-  sandKeys.forEach(k=>TERRAIN[k]='sand');
+  }
+
+  // ═══ Yamanote Line (山手線) ═══
+  drawLine([
+    {x:34,y:10},{x:36,y:9},{x:38,y:8},{x:40,y:8},{x:42,y:8},
+    {x:44,y:9},{x:45,y:11},{x:46,y:13},
+    {x:47,y:15},{x:47,y:17},{x:47,y:19},{x:47,y:21},
+    {x:47,y:23},{x:47,y:25},{x:46,y:27},{x:45,y:29},
+    {x:44,y:31},{x:43,y:33},{x:42,y:34},
+    {x:40,y:35},{x:38,y:34},{x:36,y:33},
+    {x:35,y:31},{x:33,y:29},{x:31,y:27},
+    {x:30,y:25},{x:30,y:22},{x:30,y:19},
+    {x:31,y:16},{x:32,y:13},{x:34,y:10}
+  ]);
+
+  // ═══ 中央線 (Chuo Line) — West edge → 新宿 → 東京 ═══
+  drawLine([
+    {x:0,y:22},{x:10,y:22},{x:20,y:22},{x:30,y:22},{x:35,y:22},
+    {x:38,y:22},{x:42,y:21},{x:44,y:20},{x:47,y:21},{x:47,y:23}
+  ]);
+
+  // ═══ 総武線 (Sobu Line) — 秋葉原 → east edge ═══
+  drawLine([
+    {x:47,y:19},{x:52,y:19},{x:56,y:19},{x:60,y:19},
+    {x:65,y:19},{x:70,y:19},{x:76,y:19},{x:79,y:19}
+  ]);
+
+  // ═══ 京浜東北線 北 (Keihin-Tohoku North) — 田端 → north edge ═══
+  drawLine([{x:42,y:8},{x:43,y:6},{x:44,y:4},{x:44,y:2},{x:44,y:0}]);
+
+  // ═══ 京浜東北線 南 (Keihin-Tohoku South) — 品川 → south edge ═══
+  drawLine([{x:42,y:34},{x:40,y:37},{x:38,y:40},{x:36,y:44},{x:34,y:49}]);
+
+  // ═══ 埼京線 (Saikyo Line) — 池袋 → north edge ═══
+  drawLine([{x:34,y:10},{x:34,y:7},{x:35,y:4},{x:36,y:2},{x:36,y:0}]);
+
+  // ═══ 常磐線 (Joban Line) — 日暮里 → northeast edge ═══
+  drawLine([{x:45,y:11},{x:48,y:9},{x:52,y:6},{x:56,y:4},{x:60,y:2},{x:65,y:0}]);
+
+  // ═══ 京葉線 (Keiyo Line) — 東京 → southeast along bay (bridge) ═══
+  drawLine([
+    {x:47,y:23},{x:49,y:25},{x:52,y:27},{x:56,y:30},
+    {x:60,y:33},{x:65,y:35},{x:70,y:37},{x:76,y:39}
+  ], true);
+
+  // ═══ りんかい線 (Rinkai Line) — 大崎 → Odaiba → 新木場 (bridge) ═══
+  drawLine([
+    {x:40,y:35},{x:44,y:36},{x:48,y:37},{x:52,y:38},
+    {x:56,y:38},{x:60,y:37},{x:62,y:35},{x:60,y:33},{x:56,y:30}
+  ], true);
+
+  // ═══ 東京モノレール (Tokyo Monorail) — 浜松町 → south (bridge) ═══
+  drawLine([
+    {x:45,y:29},{x:46,y:33},{x:48,y:37},{x:50,y:41},{x:52,y:45},{x:52,y:49}
+  ], true);
+
+  // ═══ 南武線 (Nambu Line) — 川崎方面 → southwest ═══
+  drawLine([{x:34,y:49},{x:28,y:46},{x:20,y:44},{x:10,y:42},{x:0,y:40}]);
+
+  // Station tiles
+  STATIONS.forEach(s=>set(s.x,s.y,'station'));
+
+  // Sand border (around water edges, but not on Odaiba interior)
+  const sk=[];
+  for(let cy=0;cy<MAP_ROWS;cy++)
+    for(let cx=0;cx<MAP_COLS;cx++){
+      if(get(cx,cy)!=='grass') continue;
+      for(const[dx,dy]of[[-1,0],[1,0],[0,-1],[0,1]])
+        if(get(cx+dx,cy+dy)==='water'){sk.push(`${cx},${cy}`);break;}
+    }
+  sk.forEach(k=>TERRAIN[k]='sand');
 }
 
 // ==================== DISTRICT SYSTEM ====================
@@ -605,6 +674,18 @@ function drawBg(){
     if(sy>0&&sy<VH){bgX.beginPath();bgX.moveTo(0,sy);bgX.lineTo(VW,sy);bgX.stroke();}
   }
   bgX.setLineDash([]);
+  // Station labels
+  bgX.font='bold 9px sans-serif';
+  bgX.textAlign='center'; bgX.textBaseline='bottom';
+  STATIONS.forEach(s=>{
+    const sx=s.x*GRID-cam.x+GRID/2, sy=s.y*GRID-cam.y-2;
+    if(sx<-60||sx>VW+60||sy<-20||sy>VH+20) return;
+    bgX.fillStyle='rgba(0,0,0,0.7)';
+    const tw=bgX.measureText(s.n).width;
+    bgX.fillRect(sx-tw/2-2,sy-10,tw+4,12);
+    bgX.fillStyle='#fff';
+    bgX.fillText(s.n,sx,sy);
+  });
 }
 
 // ==================== DRAW BUILDINGS ====================
@@ -748,7 +829,7 @@ function drawMinimap(){
   for(let r=0;r<MAP_ROWS;r++)
     for(let c=0;c<MAP_COLS;c++){
       const t=TERRAIN[`${c},${r}`]||'grass';
-      mmX.fillStyle={grass:'#2e6b2e',water:'#1a5f8a',sand:'#b8975a',hill:'#4a5c4a'}[t];
+      mmX.fillStyle={grass:'#2e6b2e',water:'#1a5f8a',sand:'#b8975a',hill:'#4a5c4a',rail:'#888888',station:'#ffffff'}[t]||'#2e6b2e';
       mmX.fillRect(c*sx,r*sy,sx+.5,sy+.5);
     }
   const dsx=DIST_W*sx,dsy=DIST_H*sy;
@@ -870,6 +951,7 @@ function handleClick(key,cx,cy,screenX,screenY){
   if(b.tier>state.maxMilestone){notify('🔒 マイルストーン未達で未解放','rd');return;}
   const terrain=TERRAIN[key]||'grass';
   if(terrain==='water'&&selectedType!=='ocean'){notify('🌊 水域には建てられません','rd');return;}
+  if(terrain==='rail'||terrain==='station'){notify('🚃 線路上には建てられません','rd');return;}
 
   // District price adjustment
   const distMult=getDistrictPriceMult(cx,cy);
